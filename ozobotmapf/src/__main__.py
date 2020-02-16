@@ -13,12 +13,14 @@ def run_simulator():
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    configurator = ConfigOptions('resources/config/laptop_config.ini')
+    configurator = ConfigOptions('resources/config/monitor_config.ini')
     display_config = configurator.display_config
+    ozobot_config = configurator.ozobot_config
 
-    display = Display(args.resolution, args.fullscreen)
+    display = Display(args.resolution, args.fullscreen, display_config, ozobot_config)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='resources/logs/log.log', format='%(levelname)s:%(message)s', level=logging.INFO)
+    logging.basicConfig(filename='resources/logs/log.log', format='%(asctime)s - %(levelname)s: %(message)s',
+                        level=logging.INFO)
     run_simulator()

@@ -13,6 +13,8 @@ class ConfigOptions:
         self.config.read(path)
 
         self.display_config = self.get_section_dict("display")
+        self.ozobot_config = self.get_section_dict("ozobot")
+
         logging.info("Config file parsed successfully.")
 
     def get_section_dict(self, section):
@@ -20,13 +22,14 @@ class ConfigOptions:
         options = {}
         for option in self.config.options(section):
             try:
+                # TODO: Perform validation later. Make sure to support float values for real world dimensions
                 val = int(self.config.get(section, option))
                 if val <= 0: raise ValueError
                 options[option] = val
             except ValueError:
-                message = "Dimensions and resolutions must be positive integers."
+                message = "Values in configuration file must be positive integers."
                 logging.error("Config file parsing failed: {}".format(message))
                 raise InvalidConfigOptionException(message)
 
-        logging.debug("Display configuration: {}".format(options))
+        logging.debug("Read from config file: {}".format(options))
         return options
