@@ -5,21 +5,21 @@ import math
 class DisplayParameters:
     """Class computes and stores all display and rendering parameters."""
 
-    def __init__(self, resolution, display_config, ozobot_config):
+    def __init__(self, resolution, config):
         """Creates an instance of DisplayParameters and initializes itself."""
-        self.window_width = resolution[0]
-        self.window_height = resolution[1]
-        self.display_width = display_config["resolution_width"]
-        self.display_height = display_config["resolution_height"]
+        self.window_width = int(resolution[0])
+        self.window_height = int(resolution[1])
+        self.display_width = int(config["display"]["resolution_width"])
+        self.display_height = int(config["display"]["resolution_height"])
 
         self.mm_to_px = \
-            ((display_config["resolution_width"] / display_config["display_width"]) +
-             (display_config["resolution_height"] / display_config["display_height"])) / 2
+            ((config["display"]["resolution_width"] / config["display"]["display_width"]) +
+             (config["display"]["resolution_height"] / config["display"]["display_height"])) / 2
 
-        self.tile_size = round(ozobot_config["tile_size"] * self.mm_to_px)
-        self.tile_line_width = math.floor(ozobot_config["tile_line_width"] * self.mm_to_px)
-        self.line_width = round(ozobot_config["line_width"] * self.mm_to_px)
-        self.wall_width = round(ozobot_config["wall_width"] * self.mm_to_px)
+        self.tile_size = round(config["ozobot"]["tile_size"] * self.mm_to_px)
+        self.tile_line_width = math.floor(config["ozobot"]["tile_line_width"] * self.mm_to_px)
+        self.line_width = round(config["ozobot"]["line_width"] * self.mm_to_px)
+        self.wall_width = round(config["ozobot"]["wall_width"] * self.mm_to_px)
 
         self.max_map_width = math.floor(self.window_width / self.tile_size)
         self.max_map_height = math.floor(self.window_height / self.tile_size)

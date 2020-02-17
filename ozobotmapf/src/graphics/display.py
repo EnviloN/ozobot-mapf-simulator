@@ -9,7 +9,7 @@ from src.utils.constants import Colors, Values
 class Display:
     """Class handles object rendering on the screen."""
 
-    def __init__(self, resolution, fullscreen, display_config, ozobot_config):
+    def __init__(self, resolution, fullscreen, config):
         """Creates Display instance and initializes itself.
 
         Pygame is initialized, real world dimensions from configuration are converted into pixels.
@@ -19,10 +19,10 @@ class Display:
         pygame.init()
         if fullscreen:
             self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-            resolution = [display_config["resolution_width"], display_config["resolution_height"]]
+            resolution = [config["display"]["resolution_width"], config["display"]["resolution_height"]]
         else:
             self.screen = pygame.display.set_mode(resolution)
-        self.parameters = DisplayParameters(resolution, display_config, ozobot_config)
+        self.parameters = DisplayParameters(resolution, config)
         pygame.display.set_caption(Values.APP_NAME)
 
         self.screen.fill(Colors.WHITE)

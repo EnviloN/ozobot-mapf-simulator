@@ -14,10 +14,8 @@ def run_simulator():
         logging.getLogger().setLevel(logging.DEBUG)
 
     configurator = ConfigOptions('resources/config/monitor_config.ini')
-    display_config = configurator.display_config
-    ozobot_config = configurator.ozobot_config
 
-    display = Display(args.resolution, args.fullscreen, display_config, ozobot_config)
+    display = Display(args.resolution, args.fullscreen, configurator.config)
 
 
 if __name__ == '__main__':

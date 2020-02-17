@@ -9,27 +9,47 @@ class ConfigOptions:
 
     def __init__(self, path):
         """Creates a ConfigParser and parses a config file on given path."""
-        self.config = ConfigParser(allow_no_value=True)
-        self.config.read(path)
+        self.raw_config = ConfigParser(allow_no_value=True)
+        self.raw_config.read(path)
 
-        self.display_config = self.get_section_dict("display")
-        self.ozobot_config = self.get_section_dict("ozobot")
+        self.config = self.parse()
+        self.validate_config()
 
-        logging.info("Config file parsed successfully.")
+        logging.info("Config file parsed successfully: {}".format(self.config))
+
+    def parse(self):
+        """Parses the raw config into a dict of dicts.
+
+        Format: config['section']['option']
+        """
+        config = {}
+        for section in self.raw_config.sections():
+            config[section] = self.get_section_dict(section)
+
+        return config
 
     def get_section_dict(self, section):
         """Creates a dictionary from config file section."""
         options = {}
-        for option in self.config.options(section):
-            try:
-                # TODO: Perform validation later. Make sure to support float values for real world dimensions
-                val = int(self.config.get(section, option))
-                if val <= 0: raise ValueError
-                options[option] = val
-            except ValueError:
-                message = "Values in configuration file must be positive integers."
-                logging.error("Config file parsing failed: {}".format(message))
-                raise InvalidConfigOptionException(message)
+        for option in self.raw_config.options(section):
+            options[option] = self.raw_config.get(section, option)
 
-        logging.debug("Read from config file: {}".format(options))
         return options
+
+    def validate_config(self):
+        """Validates the whole config file (with retyping)."""
+        for section in self.config:
+            self.validate_section(section)
+
+    def validate_section(self, section):
+        """Validates config section values."""
+        for option in self.config[section]:
+            try:
+                self.config[section][option] = float(self.config[section][option])
+                if self.config[section][option] <= 0:
+                    raise ValueError
+            except ValueError:
+                raise InvalidConfigOptionException(
+                    "'{}' option in '{}' section of the configuration file must be a positive number."
+                    .format(option, section)
+                )
