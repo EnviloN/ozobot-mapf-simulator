@@ -5,44 +5,80 @@ from src.configuration.config_exceptions import InvalidConfigOptionException
 
 
 class ConfigOptions:
-    """Class handles parsing of configuration files."""
+    """Class handles parsing of a configuration file.
+
+    Attributes:
+        __raw_config (ConfigParser): Parser for configuration files
+        config (dict[str, dict[str, float]): Parsed configuration file
+    """
 
     def __init__(self, path):
-        """Creates a ConfigParser and parses a config file on given path."""
-        self.raw_config = ConfigParser(allow_no_value=True)
-        self.raw_config.read(path)
+        """Initialization of ConfigOptions instance.
 
-        self.config = self.parse()
-        self.validate_config()
+        ConfigParser is initialized and reads the configuration file. Then it is parsed into a dictionary.
+
+        Args:
+            path (str): Path to the configuration file
+        """
+        self.__raw_config = ConfigParser(allow_no_value=True)
+        self.__raw_config.read(path)
+
+        self.config = self.__parse()
+        self.__validate_config()
 
         logging.info("Config file parsed successfully: {}".format(self.config))
 
-    def parse(self):
+    def __parse(self):
         """Parses the raw config into a dict of dicts.
 
-        Format: config['section']['option']
+        Each section of the configuration file is parsed separately into a dictionary.
+
+        Note:
+            Format: config['section']['option'] = value
+
+        Returns:
+            dict[str, dict[str, str]: Parsed configuration file
         """
         config = {}
-        for section in self.raw_config.sections():
-            config[section] = self.get_section_dict(section)
+        for section in self.__raw_config.sections():
+            config[section] = self.__get_section_dict(section)
 
         return config
 
-    def get_section_dict(self, section):
-        """Creates a dictionary from config file section."""
+    def __get_section_dict(self, section):
+        """Creates a dictionary from config file section.
+
+        Args:
+            section (str): Name of the configuration file section
+
+        Returns:
+            dict[str, str]: Parsed configuration file section
+        """
         options = {}
-        for option in self.raw_config.options(section):
-            options[option] = self.raw_config.get(section, option)
+        for option in self.__raw_config.options(section):
+            options[option] = self.__raw_config.get(section, option)
 
         return options
 
-    def validate_config(self):
-        """Validates the whole config file (with retyping)."""
-        for section in self.config:
-            self.validate_section(section)
+    def __validate_config(self):
+        """Validates the whole config file (with retyping).
 
-    def validate_section(self, section):
-        """Validates config section values."""
+        Each section is validated separately.
+        """
+        for section in self.config:
+            self.__validate_section(section)
+
+    def __validate_section(self, section):
+        """Validates config section values.
+
+        Values are retyped from str to float.
+
+        Args:
+            section (str): Name of the section
+
+        Raises:
+            ValueError: If value cannot be retyped to float or it is <= 0
+        """
         for option in self.config[section]:
             try:
                 self.config[section][option] = float(self.config[section][option])

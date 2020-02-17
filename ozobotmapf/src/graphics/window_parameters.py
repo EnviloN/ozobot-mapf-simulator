@@ -5,10 +5,32 @@ from src.graphics.point import Point
 
 
 class WindowParameters:
-    """Class computes and stores all display and rendering parameters."""
+    """Class computes and stores all display and rendering parameters.
+
+    Attributes:
+        window_width (int): Width of the window in pixels
+        window_height (int): Height of the window in pixels
+        display_width (int): Width of the display in pixels
+        display_height (int): Height of the display in pixels
+        mm_to_px (float): Conversion ratio between millimeters and pixels computed from display's DPI
+        tile_size (int): Length of the tile's side in pixels
+        tile_line_width (int): Width of the tile line in pixels
+        line_width (int): Width of the following line in pixels
+        wall_width (int): Width of the wall line in pixels
+        max_map_width (int): Maximal map width in tiles
+        max_map_height (int): Maximal map height in tiles
+        top_margin (int): Distance between top of the window and top of the map in pixels
+        left_margin (int): Distance between left border of the window and left border of the map in pixels
+        origin (Point): Top-left point of the map
+    """
 
     def __init__(self, resolution, config):
-        """Creates an instance of DisplayParameters and initializes itself."""
+        """Initialization of WindowParameters from parsed config file.
+
+        Args:
+            resolution (list[int]): Width and height of the application window
+            config (dict[str, dict[str, float]): Parsed configuration file
+        """
         self.window_width = int(resolution[0])
         self.window_height = int(resolution[1])
         self.display_width = int(config["display"]["resolution_width"])
