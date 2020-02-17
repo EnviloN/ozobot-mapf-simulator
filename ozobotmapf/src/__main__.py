@@ -2,7 +2,7 @@ import logging
 
 from src.configuration.cli_options import CLIOptions
 from src.configuration.config_options import ConfigOptions
-from src.graphics.display import Display
+from src.graphics.window import Window
 
 
 def run_simulator():
@@ -15,7 +15,7 @@ def run_simulator():
 
     configurator = ConfigOptions('resources/config/monitor_config.ini')
 
-    display = Display(args.resolution, args.fullscreen, configurator.config)
+    window = Window(args.resolution, args.fullscreen, configurator.config)
 
 
 if __name__ == '__main__':

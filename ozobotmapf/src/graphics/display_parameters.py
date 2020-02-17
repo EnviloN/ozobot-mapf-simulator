@@ -1,8 +1,10 @@
 import logging
 import math
 
+from src.graphics.point import Point
 
-class DisplayParameters:
+
+class WindowParameters:
     """Class computes and stores all display and rendering parameters."""
 
     def __init__(self, resolution, config):
@@ -27,7 +29,7 @@ class DisplayParameters:
         self.top_margin = math.floor((self.window_height - (self.tile_size * self.max_map_height)) / 2)
         self.left_margin = math.floor((self.window_width - (self.tile_size * self.max_map_width)) / 2)
 
-        self.origin = [self.left_margin, self.top_margin]
+        self.origin = Point(self.left_margin, self.top_margin)
 
         logging.debug(str(self))
 
