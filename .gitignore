@@ -128,5 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Idea stuff
+# IDE/editor stuff
 .idea
+.vscode
+
+# sphinx build folder
+_build
