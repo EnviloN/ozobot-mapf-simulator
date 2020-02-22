@@ -1,10 +1,9 @@
 import logging
 import pygame
-import time
 
 from src.graphics.window_parameters import WindowParameters
 from src.graphics.point import Point
-from src.map.map import Map
+from src.map.ozomap import OzoMap
 from src.utils.constants import Colors, Values
 
 
@@ -53,36 +52,126 @@ class Window:
         pygame.display.update()
         return self
 
-    def draw_tile_grid(self, mapp):
-        """Method draws map tile grid on the screen.
+    def draw_map(self, ozomap):
+        """Method draws given map to the screen.
 
-        Tiles are not drawn individually. All horizontal lines are drawn, then all vertical lines.
+        Firstly, all tiles are drawn, and then all walls are drawn.
 
         Args:
-            mapp (Map): Map of the problem
+            ozomap (OzoMap): Map to be drawn
 
         Returns:
             Window: itself
         """
-        origin = mapp.origin
+        self.__screen.fill(Colors.WHITE)
 
-        # Horizontal lines
-        line_length = len(mapp.grid) * mapp.tile_size
-        for i in range(len(mapp.grid[0]) + 1):
-            offset = i * mapp.tile_size
-            start = Point(origin.x, origin.y + offset)
-            end = Point(origin.x + line_length, origin.y + offset)
-            self.__draw_tile_line(start, end)
+        for x in range(len(ozomap.grid)):
+            for y in range(len(ozomap.grid[0])):
+                self.__draw_tile(ozomap.grid[x][y])
 
-        # Vertical lines
-        line_length = len(mapp.grid[0]) * mapp.tile_size
-        for i in range(len(mapp.grid) + 1):
-            offset = i * mapp.tile_size
-            start = Point(origin.x + offset, origin.y)
-            end = Point(origin.x + offset, origin.y + line_length)
-            self.__draw_tile_line(start, end)
-
+        self.__draw_walls(ozomap)
         return self
+
+    def __draw_tile(self, tile):
+        """Method draws a tile.
+
+        If there is a start/end point for any agent, tile is filled with corresponding color. Then, borders
+        are drawn around the tile.
+
+        Args:
+            tile (Tile): A tile to be drawn
+        """
+        tile_size = self.parameters.tile_size
+        if tile.start_agent > 0 and tile.finish_agent > 0:
+            pass # TODO: Red and green stripes fill
+        elif tile.start_agent > 0:
+            self.__screen.fill(Colors.START, [tile.origin.x, tile.origin.y, tile_size, tile_size])
+        elif tile.finish_agent > 0:
+            self.__screen.fill(Colors.FINISH, [tile.origin.x, tile.origin.y, tile_size, tile_size])
+
+        pygame.draw.rect(self.__screen, Colors.GREY, [tile.origin.x, tile.origin.y, tile_size, tile_size],
+                         self.parameters.tile_line_width)
+
+    def __draw_walls(self, ozomap):
+        """Method all walls in the map.
+
+        Args:
+            ozomap (OzoMap): Map that is being drawn
+        """
+        for x in range(len(ozomap.grid)):
+            for y in range(len(ozomap.grid[0])):
+                tile = ozomap.grid[x][y]
+                if tile.has_upper_wall(): self.__draw_upper_wall(tile.origin)
+                if tile.has_right_wall(): self.__draw_right_wall(tile.origin)
+                if tile.has_bottom_wall(): self.__draw_bottom_wall(tile.origin)
+                if tile.has_left_wall(): self.__draw_left_wall(tile.origin)
+
+    def __draw_upper_wall(self, tile_origin):
+        """Method draws upper wall of a tile.
+
+        Args:
+            tile_origin (Point): Origin of a given tile
+        """
+        self.__draw_wall_line(tile_origin,
+                              tile_origin.moved_copy(self.parameters.tile_size, 0))
+
+    def __draw_right_wall(self, tile_origin):
+        """Method draws right wall of a tile.
+
+        Args:
+            tile_origin (Point): Origin of a given tile
+        """
+        self.__draw_wall_line(tile_origin.moved_copy(self.parameters.tile_size, 0),
+                              tile_origin.moved_copy(self.parameters.tile_size, self.parameters.tile_size))
+
+    def __draw_bottom_wall(self, tile_origin):
+        """Method draws bottom wall of a tile.
+
+        Args:
+            tile_origin (Point): Origin of a given tile
+        """
+        self.__draw_wall_line(tile_origin.moved_copy(self.parameters.tile_size, self.parameters.tile_size),
+                              tile_origin.moved_copy(0, self.parameters.tile_size))
+
+    def __draw_left_wall(self, tile_origin):
+        """Method draws left wall of a tile.
+
+        Args:
+            tile_origin (Point): Origin of a given tile
+        """
+        self.__draw_wall_line(tile_origin.moved_copy(0, self.parameters.tile_size),
+                              tile_origin)
+
+    # def draw_tile_grid(self, ozomap):
+    #     """Method draws map tile grid on the screen.
+    #
+    #     Tiles are not drawn individually. All horizontal lines are drawn, then all vertical lines.
+    #
+    #     Args:
+    #         ozomap (OzoMap): Map of the problem
+    #
+    #     Returns:
+    #         Window: itself
+    #     """
+    #     origin = ozomap.origin
+    #
+    #     # Horizontal lines
+    #     line_length = len(ozomap.grid) * ozomap.tile_size
+    #     for i in range(len(ozomap.grid[0]) + 1):
+    #         offset = i * ozomap.tile_size
+    #         start = Point(origin.x, origin.y + offset)
+    #         end = Point(origin.x + line_length, origin.y + offset)
+    #         self.__draw_tile_line(start, end)
+    #
+    #     # Vertical lines
+    #     line_length = len(ozomap.grid[0]) * ozomap.tile_size
+    #     for i in range(len(ozomap.grid) + 1):
+    #         offset = i * ozomap.tile_size
+    #         start = Point(origin.x + offset, origin.y)
+    #         end = Point(origin.x + offset, origin.y + line_length)
+    #         self.__draw_tile_line(start, end)
+    #
+    #     return self
 
     def __draw_tile_line(self, start, end):
         """Method draws a tile line from start to end.
@@ -95,3 +184,15 @@ class Window:
             end (Point): End point of the line
         """
         pygame.draw.line(self.__screen, Colors.GREY, start, end, self.parameters.tile_line_width)
+
+    def __draw_wall_line(self, start, end):
+        """Method draws a wall line from start to end.
+
+        Note:
+            Line width can be configured in the configuration file.
+
+        Args:
+            start (Point): Start point of the line
+            end (Point): End point of the line
+        """
+        pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.parameters.wall_width)

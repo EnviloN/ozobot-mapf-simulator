@@ -1,4 +1,5 @@
 import logging
+import os.path
 
 from argparse import ArgumentParser
 from src.configuration.config_exceptions import InvalidCLIOptionException
@@ -38,8 +39,9 @@ class CLIOptions:
         self.__add_arguments()
 
         self.args = self.__parser.parse_args()
-        self.__validate_arguments()
+        logging.info("Command-line arguments: {}".format(self.args))
 
+        self.__validate_arguments()
         logging.info("Command-line arguments parsed and validated.")
 
     def __add_arguments(self):
@@ -48,6 +50,8 @@ class CLIOptions:
                                    help='Window resolution to be used [Width, Height].')
         self.__parser.add_argument('-f', '--full-screen', dest='fullscreen', action='store_true',
                                    help='Window is run in fullscreen mode.')
+        self.__parser.add_argument('-m', '--map', type=str, dest='map',
+                                   help='Map of the problem.')
         self.__parser.add_argument('-d', '--debug', dest='debug', action='store_true',
                                    help='Log debugging messages.')
 
@@ -56,3 +60,9 @@ class CLIOptions:
         assert_argument(self.args.resolution[0] > 0, "Width resolution has to be > 0.")
         assert_argument(self.args.resolution[1] > 0, "Height resolution has to be > 0.")
 
+        assert_argument(self.args.map is not None, "You have to provide a map.")
+        if not os.path.isfile(self.args.map):
+            if os.path.isfile("resources/maps/" + self.args.map):
+                self.args.map = "resources/maps/" + self.args.map
+            else:
+                assert_argument(False, "Map has to be a path to a file or a map name from `resources/maps/` folder.")
