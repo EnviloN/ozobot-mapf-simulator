@@ -72,6 +72,21 @@ class Window:
         self.__draw_walls(ozomap)
         return self
 
+    def draw_full_path(self, positions):
+        """Method draws the full path of a single agent.
+
+        Args:
+            positions (list[Tiles]): Agent's position list during plan execution
+
+        Returns:
+            Window: itself
+        """
+        half_size = self.parameters.tile_size / 2
+        points = [pos.origin.moved(half_size, half_size) for pos in positions]
+
+        self.__draw_following_path(points)
+        return self
+
     def __draw_tile(self, tile):
         """Method draws a tile.
 
@@ -106,6 +121,18 @@ class Window:
                 if tile.has_bottom_wall(): self.__draw_bottom_wall(tile.origin)
                 if tile.has_left_wall(): self.__draw_left_wall(tile.origin)
 
+    def __draw_line_between_tiles(self, tile_from, tile_to):
+        """Method draws following line between two tiles.
+
+        Args:
+            tile_from (Tile): Tile where the line should start
+            tile_to (Tile): Tile where the line should end
+        """
+        half_size = self.parameters.tile_size / 2
+        start = tile_from.origin.moved(half_size, half_size)
+        end = tile_to.origin.moved(half_size, half_size)
+        self.__draw_following_line(start, end)
+
     def __draw_upper_wall(self, tile_origin):
         """Method draws upper wall of a tile.
 
@@ -113,7 +140,7 @@ class Window:
             tile_origin (Point): Origin of a given tile
         """
         self.__draw_wall_line(tile_origin,
-                              tile_origin.moved_copy(self.parameters.tile_size, 0))
+                              tile_origin.moved(self.parameters.tile_size, 0))
 
     def __draw_right_wall(self, tile_origin):
         """Method draws right wall of a tile.
@@ -121,8 +148,8 @@ class Window:
         Args:
             tile_origin (Point): Origin of a given tile
         """
-        self.__draw_wall_line(tile_origin.moved_copy(self.parameters.tile_size, 0),
-                              tile_origin.moved_copy(self.parameters.tile_size, self.parameters.tile_size))
+        self.__draw_wall_line(tile_origin.moved(self.parameters.tile_size, 0),
+                              tile_origin.moved(self.parameters.tile_size, self.parameters.tile_size))
 
     def __draw_bottom_wall(self, tile_origin):
         """Method draws bottom wall of a tile.
@@ -130,8 +157,8 @@ class Window:
         Args:
             tile_origin (Point): Origin of a given tile
         """
-        self.__draw_wall_line(tile_origin.moved_copy(self.parameters.tile_size, self.parameters.tile_size),
-                              tile_origin.moved_copy(0, self.parameters.tile_size))
+        self.__draw_wall_line(tile_origin.moved(self.parameters.tile_size, self.parameters.tile_size),
+                              tile_origin.moved(0, self.parameters.tile_size))
 
     def __draw_left_wall(self, tile_origin):
         """Method draws left wall of a tile.
@@ -139,7 +166,7 @@ class Window:
         Args:
             tile_origin (Point): Origin of a given tile
         """
-        self.__draw_wall_line(tile_origin.moved_copy(0, self.parameters.tile_size),
+        self.__draw_wall_line(tile_origin.moved(0, self.parameters.tile_size),
                               tile_origin)
 
     # def draw_tile_grid(self, ozomap):
@@ -196,3 +223,26 @@ class Window:
             end (Point): End point of the line
         """
         pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.parameters.wall_width)
+
+    def __draw_following_line(self, start, end):
+        """Method draws a following line from start to end.
+
+        Note:
+            Line width can be configured in the configuration file.
+
+        Args:
+            start (Point): Start point of the line
+            end (Point): End point of the line
+        """
+        pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.parameters.line_width)
+
+    def __draw_following_path(self, points):
+        """Method draws following lines following the given list of points.
+
+        Note:
+            Line width can be configured in the configuration file.
+
+        Args:
+            points (list[Point]): List of points to draw a line between
+        """
+        pygame.draw.lines(self.__screen, Colors.BLACK, False, points, self.parameters.line_width)

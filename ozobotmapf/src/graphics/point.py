@@ -17,7 +17,7 @@ class Point:
         """
         self.x, self.y = x, y
 
-    def moved_copy(self, x, y):
+    def moved(self, x, y):
         """Method creates a copy of the point moved by x and y.
 
         Args:
@@ -28,6 +28,10 @@ class Point:
             Point: New point instance moved by x and y
         """
         return Point(self.x + x, self.y + y)
+
+    def to_pair(self):
+        """Method returns the point in a pair representation."""
+        return self.x, self.y
 
     def __str__(self):
         return "Point [{}, {}]".format(self.x, self.y)

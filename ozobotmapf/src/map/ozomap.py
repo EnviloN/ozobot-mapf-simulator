@@ -1,5 +1,6 @@
 import logging
 import re
+import itertools
 
 from src.graphics.point import Point
 from src.map.ozomap_exception import OzoMapException
@@ -34,9 +35,9 @@ class OzoMap:
                      range(window_params.max_map_width)]
         for x in range(len(self.grid)):
             for y in range(len(self.grid[0])):
-                self.grid[x][y] = Tile(self.origin.moved_copy(x * self.tile_size, y * self.tile_size))
+                self.grid[x][y] = Tile(self.origin.moved(x * self.tile_size, y * self.tile_size))
 
-    def load_map(self, path):
+    def load_map(self, path, map_attributes):
         """Method loads map from a file.
 
         First, the map height and width are set, as well as number of agents. These parameters are validated and then
@@ -44,29 +45,40 @@ class OzoMap:
 
         Args:
             path (string): Path to the map file
+            map_attributes (list[int]): List of map attributes (width, height, agent count)
         """
         logging.info("Loading map.")
         with open(path, "r") as file:
             lines = file.readlines()
 
-        try:
-            self.width, self.height = [int(x) for x in lines[0].split("x")]
-            self.agent_cnt = int(lines[1])
-        except ValueError:
-            raise OzoMapException("OzoMap file has invalid syntax.")
-
-        if self.width > len(self.grid) or self.height > len(self.grid[0]):
-            raise OzoMapException("Map is too big for the target display.")
-        if self.agent_cnt >= self.width * self.height:
-            raise OzoMapException("Too many agents in the map.")
-
-        lines = lines[2:]
-        # TODO: Save lines in a temp file for MAPF solver to use
-
+        self.width, self.height, self.agent_cnt = map_attributes
+        self.__validate_attributes()
         self.__build_map(lines)
 
         logging.info("Map successfully loaded.")
         logging.debug("Map: {}x{} tiles, {} agents.".format(self.width, self.height, self.agent_cnt))
+
+    def get_tiles_from_agent_positions(self, positions, waiting=True):
+        """Method returns list of tiles for given agent's position list.
+
+        Args:
+            positions (list[int]): Agent's positions (tile IDs) during the plan execution
+            waiting (bool): If false, consecutive duplicates from positions are removed
+
+        Returns:
+            list[Tiles]: List of tile instances for given agent's positions
+        """
+        if waiting:
+            return [self.__get_tile_by_id(tile_id) for tile_id in positions]
+        else:
+            return [self.__get_tile_by_id(tile_id) for tile_id in [group[0] for group in itertools.groupby(positions)]]
+
+    def __validate_attributes(self):
+        """Method validates map width, height and agent count."""
+        if self.width > len(self.grid) or self.height > len(self.grid[0]):
+            raise OzoMapException("Map is too big for the target display.")
+        if self.agent_cnt >= self.width * self.height:
+            raise OzoMapException("Too many agents in the map.")
 
     def __build_map(self, lines):
         """Method builds the map from graph representation.
@@ -129,6 +141,18 @@ class OzoMap:
                 else:
                     self.grid[x_from][y_from].destroy_left_wall()
                     self.grid[x_to][y_to].destroy_right_wall()
+
+    def __get_tile_by_id(self, tile_id):
+        """Method returns a tile instance with given tile_id
+
+        Args:
+            tile_id (int): Number of the tile
+
+        Returns:
+            Tile: Instance of tile with given tile_id
+        """
+        x, y = self.__get_position_from_id(tile_id)
+        return self.grid[x][y]
 
     def __get_position_from_id(self, tile_id):
         """Method computes which tile (row and column) corresponds to tile ID.

@@ -1,4 +1,5 @@
 import logging
+import os.path
 from configparser import ConfigParser
 
 from src.configuration.config_exceptions import InvalidConfigOptionException
@@ -66,7 +67,10 @@ class ConfigOptions:
         Each section is validated separately.
         """
         for section in self.config:
-            self.__validate_section(section)
+            if section == "solver":
+                self.__validate_solver_section()
+            else:
+                self.__validate_section(section)
 
     def __validate_section(self, section):
         """Validates config section values.
@@ -89,3 +93,9 @@ class ConfigOptions:
                     "'{}' option in '{}' section of the configuration file must be a positive number."
                     .format(option, section)
                 )
+
+    def __validate_solver_section(self):
+        """Method validates 'solver' section from configuration file."""
+        if not os.path.isdir(self.config['solver']['path']):
+            raise InvalidConfigOptionException(
+                "'path' option in 'solver' section must be a valid path to a directory.")
