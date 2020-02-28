@@ -19,44 +19,48 @@ class OzoMap:
         grid (list[list[Tile]]): 2D grid of tiles
     """
 
-    def __init__(self, window_params):
+    def __init__(self, config):
         """Initialization of Map instance.
 
         The 2D grid of tiles is created.
 
         Args:
-            window_params (WindowParameters): Parameters of the application window
+            config (Configuration): Application configuration parameters
         """
         self.width, self.height, self.agent_cnt = 0, 0, 0
-        self.origin = window_params.origin
-        self.tile_size = window_params.tile_size
-        window_params.tile_size += 1  # This needs to be done for tile borders to overlap during drawing
-        self.grid = [[Tile(Point(0, 0)) for _ in range(window_params.max_map_height)] for _ in
-                     range(window_params.max_map_width)]
+        self.origin = config.map_origin
+        self.tile_size = config.tile_size
+        config.tile_size += 1  # This needs to be done for tile borders to overlap during drawing
+        self.grid = [[Tile(Point(0, 0)) for _ in range(config.max_map_height)] for _ in
+                     range(config.max_map_width)]
         for x in range(len(self.grid)):
             for y in range(len(self.grid[0])):
                 self.grid[x][y] = Tile(self.origin.moved(x * self.tile_size, y * self.tile_size))
 
-    def load_map(self, path, map_attributes):
+    def load_map(self, config):
         """Method loads map from a file.
 
         First, the map height and width are set, as well as number of agents. These parameters are validated and then
         the map is built.
 
         Args:
-            path (string): Path to the map file
-            map_attributes (list[int]): List of map attributes (width, height, agent count)
+            config (Configuration): Application configuration
+
+        Returns:
+            OzoMap: itself
         """
         logging.info("Loading map.")
-        with open(path, "r") as file:
+        with open(config.map_path, "r") as file:
             lines = file.readlines()
 
-        self.width, self.height, self.agent_cnt = map_attributes
+        self.width, self.height, self.agent_cnt = config.map_width, config.map_height, config.map_agent_count
         self.__validate_attributes()
         self.__build_map(lines)
 
         logging.info("Map successfully loaded.")
         logging.debug("Map: {}x{} tiles, {} agents.".format(self.width, self.height, self.agent_cnt))
+
+        return self
 
     def get_tiles_from_agent_positions(self, positions, waiting=True):
         """Method returns list of tiles for given agent's position list.
@@ -76,9 +80,9 @@ class OzoMap:
     def __validate_attributes(self):
         """Method validates map width, height and agent count."""
         if self.width > len(self.grid) or self.height > len(self.grid[0]):
-            raise OzoMapException("Map is too big for the target display.")
+            raise_exception("Map is too big for the target display.")
         if self.agent_cnt >= self.width * self.height:
-            raise OzoMapException("Too many agents in the map.")
+            raise_exception("Too many agents in the map.")
 
     def __build_map(self, lines):
         """Method builds the map from graph representation.
@@ -89,7 +93,7 @@ class OzoMap:
             lines (list[str]): Lines from the map file containing the graph representation of the map.
         """
         if lines[0] != "V =\n" or lines[self.width * self.height + 1] != "E =\n":
-            raise OzoMapException("OzoMap file has invalid syntax.")
+            raise_exception("OzoMap file has invalid syntax.")
 
         tiles = lines[1:self.width * self.height + 1]
         edges = lines[self.width * self.height + 2:]
@@ -164,3 +168,14 @@ class OzoMap:
             (int, int): Tuple of row and column of the tile grid
         """
         return tile_id % self.width, tile_id // self.width
+# ------------------------------------------------------------------------------------------------------------
+
+
+def raise_exception(message):
+    """Method logs the error and raises exception.
+
+    Raises:
+        OzoMapException
+    """
+    logging.error(message)
+    raise OzoMapException(message)

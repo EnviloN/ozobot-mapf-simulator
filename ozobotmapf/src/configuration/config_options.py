@@ -24,13 +24,10 @@ class ConfigOptions:
         self.__raw_config = ConfigParser(allow_no_value=True)
         self.__raw_config.read(path)
 
-        self.config = self.__parse()
-        self.__validate_config()
+        self.config = None
 
-        logging.info("Config file parsed successfully: {}".format(self.config))
-
-    def __parse(self):
-        """Parses the raw config into a dict of dicts.
+    def parse(self):
+        """Parses the raw config into a dict of dicts and validates the values.
 
         Each section of the configuration file is parsed separately into a dictionary.
 
@@ -40,11 +37,14 @@ class ConfigOptions:
         Returns:
             dict[str, dict[str, str]: Parsed configuration file
         """
-        config = {}
+        self.config = {}
         for section in self.__raw_config.sections():
-            config[section] = self.__get_section_dict(section)
+            self.config[section] = self.__get_section_dict(section)
 
-        return config
+        self.__validate_config()
+        logging.info("Config file parsed successfully: {}".format(self.config))
+
+        return self.config
 
     def __get_section_dict(self, section):
         """Creates a dictionary from config file section.
@@ -89,13 +89,23 @@ class ConfigOptions:
                 if self.config[section][option] <= 0:
                     raise ValueError
             except ValueError:
-                raise InvalidConfigOptionException(
-                    "'{}' option in '{}' section of the configuration file must be a positive number."
-                    .format(option, section)
-                )
+                raise_exception("'{}' option in '{}' section of the configuration file must be a positive number."
+                                .format(option, section))
 
     def __validate_solver_section(self):
         """Method validates 'solver' section from configuration file."""
         if not os.path.isdir(self.config['solver']['path']):
-            raise InvalidConfigOptionException(
-                "'path' option in 'solver' section must be a valid path to a directory.")
+            raise_exception("'path' option in 'solver' section must be a valid path to a directory.")
+
+
+# ------------------------------------------------------------------------------------------------------------
+
+
+def raise_exception(message):
+    """Method logs the error and raises exception.
+
+    Raises:
+        InvalidConfigOptionException
+    """
+    logging.error(message)
+    raise InvalidConfigOptionException(message)

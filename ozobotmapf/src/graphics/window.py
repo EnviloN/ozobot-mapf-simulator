@@ -1,7 +1,6 @@
 import logging
 import pygame
 
-from src.graphics.window_parameters import WindowParameters
 from src.graphics.point import Point
 from src.map.ozomap import OzoMap
 from src.utils.constants import Colors, Values
@@ -17,31 +16,28 @@ class Window:
         __height (int): Window height
     """
 
-    def __init__(self, resolution, fullscreen, config):
+    def __init__(self, config):
         """Initialization of Window.
 
         Pygame is initialized, real world dimensions from configuration are converted into pixels.
         All display and rendering parameters are computed.
 
         Args:
-            resolution (list[int]): Width and height of the application window
-            fullscreen (bool): Flag if window should run in fullscreen mode
-            config (dict[str, dict[str, float]): Parsed configuration file
+            config (Configuration): Application configuration parameters
         """
         logging.info("Initialising pygame and display.")
         pygame.init()
-        if fullscreen:
+        if config.fullscreen:
             self.__screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-            resolution = [config["display"]["resolution_width"], config["display"]["resolution_height"]]
         else:
-            self.__screen = pygame.display.set_mode(resolution)
-        self.parameters = WindowParameters(resolution, config)
+            self.__screen = pygame.display.set_mode([config.window_width, config.window_height])
         pygame.display.set_caption(Values.APP_NAME)
 
         self.__screen.fill(Colors.WHITE)
 
         self.__width, self.__height = pygame.display.get_surface().get_size()
         logging.debug("Application window resolution: {} x {} (px)".format(self.__width, self.__height))
+        self.config = config
 
     def update(self):
         """Updates pygame.display.
@@ -81,7 +77,7 @@ class Window:
         Returns:
             Window: itself
         """
-        half_size = self.parameters.tile_size / 2
+        half_size = self.config.tile_size / 2
         points = [pos.origin.moved(half_size, half_size) for pos in positions]
 
         self.__draw_following_path(points)
@@ -96,7 +92,7 @@ class Window:
         Args:
             tile (Tile): A tile to be drawn
         """
-        tile_size = self.parameters.tile_size
+        tile_size = self.config.tile_size
         if tile.start_agent > 0 and tile.finish_agent > 0:
             pass # TODO: Red and green stripes fill
         elif tile.start_agent > 0:
@@ -105,7 +101,7 @@ class Window:
             self.__screen.fill(Colors.FINISH, [tile.origin.x, tile.origin.y, tile_size, tile_size])
 
         pygame.draw.rect(self.__screen, Colors.GREY, [tile.origin.x, tile.origin.y, tile_size, tile_size],
-                         self.parameters.tile_line_width)
+                         self.config.tile_border_width)
 
     def __draw_walls(self, ozomap):
         """Method all walls in the map.
@@ -128,7 +124,7 @@ class Window:
             tile_from (Tile): Tile where the line should start
             tile_to (Tile): Tile where the line should end
         """
-        half_size = self.parameters.tile_size / 2
+        half_size = self.config.tile_size / 2
         start = tile_from.origin.moved(half_size, half_size)
         end = tile_to.origin.moved(half_size, half_size)
         self.__draw_following_line(start, end)
@@ -140,7 +136,7 @@ class Window:
             tile_origin (Point): Origin of a given tile
         """
         self.__draw_wall_line(tile_origin,
-                              tile_origin.moved(self.parameters.tile_size, 0))
+                              tile_origin.moved(self.config.tile_size, 0))
 
     def __draw_right_wall(self, tile_origin):
         """Method draws right wall of a tile.
@@ -148,8 +144,8 @@ class Window:
         Args:
             tile_origin (Point): Origin of a given tile
         """
-        self.__draw_wall_line(tile_origin.moved(self.parameters.tile_size, 0),
-                              tile_origin.moved(self.parameters.tile_size, self.parameters.tile_size))
+        self.__draw_wall_line(tile_origin.moved(self.config.tile_size, 0),
+                              tile_origin.moved(self.config.tile_size, self.config.tile_size))
 
     def __draw_bottom_wall(self, tile_origin):
         """Method draws bottom wall of a tile.
@@ -157,8 +153,8 @@ class Window:
         Args:
             tile_origin (Point): Origin of a given tile
         """
-        self.__draw_wall_line(tile_origin.moved(self.parameters.tile_size, self.parameters.tile_size),
-                              tile_origin.moved(0, self.parameters.tile_size))
+        self.__draw_wall_line(tile_origin.moved(self.config.tile_size, self.config.tile_size),
+                              tile_origin.moved(0, self.config.tile_size))
 
     def __draw_left_wall(self, tile_origin):
         """Method draws left wall of a tile.
@@ -166,7 +162,7 @@ class Window:
         Args:
             tile_origin (Point): Origin of a given tile
         """
-        self.__draw_wall_line(tile_origin.moved(0, self.parameters.tile_size),
+        self.__draw_wall_line(tile_origin.moved(0, self.config.tile_size),
                               tile_origin)
 
     # def draw_tile_grid(self, ozomap):
@@ -210,7 +206,7 @@ class Window:
             start (Point): Start point of the line
             end (Point): End point of the line
         """
-        pygame.draw.line(self.__screen, Colors.GREY, start, end, self.parameters.tile_line_width)
+        pygame.draw.line(self.__screen, Colors.GREY, start, end, self.config.tile_border_width)
 
     def __draw_wall_line(self, start, end):
         """Method draws a wall line from start to end.
@@ -222,7 +218,7 @@ class Window:
             start (Point): Start point of the line
             end (Point): End point of the line
         """
-        pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.parameters.wall_width)
+        pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.config.wall_width)
 
     def __draw_following_line(self, start, end):
         """Method draws a following line from start to end.
@@ -234,7 +230,7 @@ class Window:
             start (Point): Start point of the line
             end (Point): End point of the line
         """
-        pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.parameters.line_width)
+        pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.config.line_width)
 
     def __draw_following_path(self, points):
         """Method draws following lines following the given list of points.
@@ -245,4 +241,4 @@ class Window:
         Args:
             points (list[Point]): List of points to draw a line between
         """
-        pygame.draw.lines(self.__screen, Colors.BLACK, False, points, self.parameters.line_width)
+        pygame.draw.lines(self.__screen, Colors.BLACK, False, points, self.config.line_width)

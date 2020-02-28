@@ -2,8 +2,8 @@ import logging
 import subprocess
 import re
 
-from src.algorighms.solver import Solver
-from src.algorighms.solver_exception import SubprocessSolverException
+from src.mapf_solvers.solver import Solver
+from src.mapf_solvers.solver_exception import SubprocessSolverException
 
 
 class SubprocessSolver(Solver):
