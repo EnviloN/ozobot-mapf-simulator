@@ -35,9 +35,8 @@ class Configuration:
             cli (namespace): Parsed command-line arguments
             config (dict[str, dict[str, float]): Parsed configuration file
         """
-
-        self.map_path = cli.map_file
-        self.solver_path = config["solver"]["path"]
+        self.map_path = None
+        self.solver_path = None
 
         self.fullscreen = cli.fullscreen
         if self.fullscreen:
@@ -63,9 +62,9 @@ class Configuration:
         self.left_margin = math.floor((self.window_width - (self.tile_size * self.max_map_width)) / 2)
 
         self.map_origin = Point(self.left_margin, self.top_margin)
-        self.map_width, self.map_height, self.map_agent_count = cli.map_attributes
+        self.map_width, self.map_height, self.map_agent_count = [None] * 3
 
-        logging.debug(str(self))
+        self.editor = cli.editor
 
     def __str__(self):
         return "CONFIGURATION PARAMETERS:\n" \
@@ -84,9 +83,44 @@ class Configuration:
                "Top margin: {}px\n" \
                "Left margin: {}px\n" \
                "Map Origin: [{}, {}]\n" \
-               "Map Attributes: [W: {}, H: {}, A: {}]".format(
+               "Map Attributes: [W: {}, H: {}, A: {}]\n" \
+               "Map Editor mode: '{}'".format(
             self.map_path, self.solver_path, self.fullscreen, self.window_width, self.window_height, self.mm_to_px,
             self.tile_size, self.tile_border_width, self.line_width, self.wall_width, self.max_map_width,
             self.max_map_height, self.top_margin, self.left_margin, self.map_origin[0], self.map_origin[1],
-            self.map_width, self.map_height, self.map_agent_count
+            self.map_width, self.map_height, self.map_agent_count, self.editor
         )
+
+
+class SimulatorConfig(Configuration):
+    """Simulator Configuration class."""
+
+    def __init__(self, cli, config):
+        """Initialization of Simulator Configuration from parsed command-line arguments and configuration file.
+
+        Args:
+            cli (namespace): Parsed command-line arguments
+            config (dict[str, dict[str, float]): Parsed configuration file
+        """
+        super().__init__(cli, config)
+
+        self.map_path = cli.map_file
+        self.solver_path = config["solver"]["path"]
+        self.map_width, self.map_height, self.map_agent_count = cli.map_attributes
+
+        logging.debug(str(self))
+
+
+class EditorConfig(Configuration):
+    """Map Editor Configuration class"""
+
+    def __init__(self, cli, config):
+        """Initialization of Map Editor Configuration from parsed command-line arguments and configuration file.
+
+        Args:
+            cli (namespace): Parsed command-line arguments
+            config (dict[str, dict[str, float]): Parsed configuration file
+        """
+        super().__init__(cli, config)
+
+        logging.debug(str(self))

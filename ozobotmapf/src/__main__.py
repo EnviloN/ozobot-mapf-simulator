@@ -3,25 +3,24 @@ import pygame
 from pygame.locals import *
 import sys
 
-from src.mapf_solvers.static_solvers import MapfSolverBoOX
+from src.simulator.simulator import Simulator
+from src.map_editor.editor import Editor
+from src.configuration.configuration import SimulatorConfig, EditorConfig
 from src.configuration.cli_options import CLIOptions
 from src.configuration.config_options import ConfigOptions
-from src.configuration.configuration import Configuration
-from src.graphics.window import Window
 from src.map.ozomap import OzoMap
+from src.mapf_solvers.static_solvers import MapfSolverBoOX
 from src.utils.constants import Values
 
 
-def run_application():
-    logging.info("Starting main process.")
-
-    config = configure_application()
+def run_simulation(config):
+    logging.info("Starting main simulation process.")
 
     ozomap = OzoMap(config).load_map(config)
     solver = init_solver(config)
     plans = solver.plan()
 
-    window = Window(config)
+    window = Simulator(config)
     window.draw_map(ozomap).update()
 
     wait()
@@ -33,7 +32,17 @@ def run_application():
 
     wait()
 
-    logging.info("Main process finished successfully.")
+    logging.info("Main simulation process finished successfully.")
+
+
+def run_editor(config):
+    logging.info("Starting main simulation process.")
+    ozomap = OzoMap(config)
+
+    editor = Editor(ozomap, config)
+    editor.run()
+
+    logging.info("Main simulation process finished successfully.")
 
 
 def configure_application():
@@ -44,13 +53,21 @@ def configure_application():
 
     config = ConfigOptions(options.config_file).parse()
 
-    configuration = Configuration(options, config)
-    return configuration
+    if options.editor:
+        config_merge = EditorConfig(options, config)
+    else:
+        config_merge = SimulatorConfig(options, config)
+
+    logging.info("Created the application configuration.")
+    return config_merge
 
 
 def init_solver(config):
+    """Function initializes the solver instance with given arguments."""
     solver_args = {"input-file": config.map_path, "algorithm": "smtcbs++"}
-    return MapfSolverBoOX(config.solver_path + "mapf_solver_boOX", solver_args)
+    solver = MapfSolverBoOX(config.solver_path + "mapf_solver_boOX", solver_args)
+    logging.info("Solver initialized.")
+    return solver
 
 
 def wait():
@@ -68,5 +85,11 @@ def wait():
 if __name__ == '__main__':
     logging.basicConfig(filename=Values.LOGS_PATH+"log.log", format='%(asctime)s - %(levelname)s: %(message)s',
                         level=logging.DEBUG)
-    run_application()
+
+    configuration = configure_application()
+    if configuration.editor:
+        run_editor(configuration)
+    else:
+        run_simulation(configuration)
+
     logging.info("----------------------------------------------------------------------------------------")

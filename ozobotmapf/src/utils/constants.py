@@ -16,6 +16,10 @@ class Colors:
 class Values:
     """Class contains global constants used across the application."""
     APP_NAME = "Ozobot MAPF Simulator"
+    EDITOR_NAME = "Ozobot MAPF Map Editor"
+
     CONFIGS_PATH = "resources/config/"
     MAPS_PATH = "resources/maps/"
     LOGS_PATH = "resources/logs/"
+
+    MAP_FILE_EXT = ".ozomap"

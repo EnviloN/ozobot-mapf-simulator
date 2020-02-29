@@ -53,14 +53,17 @@ class CLIOptions:
                                    help='Log debugging messages.')
         self.__parser.add_argument('-c', '--config_file', type=str, dest='config_file',
                                    help='Application configuration file.')
+        self.__parser.add_argument('-e', '--editor', dest='editor', action='store_true',
+                                   help='Start map editor.')
 
     def __validate_arguments(self):
         """Validates parsed command-line parameter values."""
         assert_argument(self.args.resolution[0] > 0, "Width resolution has to be > 0.")
         assert_argument(self.args.resolution[1] > 0, "Height resolution has to be > 0.")
 
-        self.__validate_map()
-        self.__validate_map_attributes()
+        if not self.args.editor:
+            self.__validate_map()
+            self.__validate_map_attributes()
         self.__validate_config_file()
 
     def __validate_map_attributes(self):

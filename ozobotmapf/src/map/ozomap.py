@@ -37,6 +37,27 @@ class OzoMap:
             for y in range(len(self.grid[0])):
                 self.grid[x][y] = Tile(self.origin.moved(x * self.tile_size, y * self.tile_size))
 
+    def init_empty_map(self, config):
+        """Initialize an empty map only with border walls.
+
+        Args:
+            config (Configuration): Application configuration parameters"""
+        self.width, self.height, self.agent_cnt = config.map_width, config.map_height, config.map_agent_count
+        self.__validate_attributes()
+
+        for x in range(self.width):
+            for y in range(self.height):
+                if y == 0:
+                    self.grid[x][y].walls[0] = True
+                if y == (self.height - 1):
+                    self.grid[x][y].walls[2] = True
+                if x == 0:
+                    self.grid[x][y].walls[3] = True
+                if x == (self.width - 1):
+                    self.grid[x][y].walls[1] = True
+
+        logging.info("Empty Map successfully initialized.")
+
     def load_map(self, config):
         """Method loads map from a file.
 
@@ -81,7 +102,7 @@ class OzoMap:
         """Method validates map width, height and agent count."""
         if self.width > len(self.grid) or self.height > len(self.grid[0]):
             raise_exception("Map is too big for the target display.")
-        if self.agent_cnt >= self.width * self.height:
+        if self.agent_cnt > self.width * self.height:
             raise_exception("Too many agents in the map.")
 
     def __build_map(self, lines):

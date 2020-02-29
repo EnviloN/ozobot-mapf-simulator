@@ -6,12 +6,11 @@ from src.map.ozomap import OzoMap
 from src.utils.constants import Colors, Values
 
 
-class Window:
+class Simulator:
     """Class handles object rendering on the screen and Window state.
 
     Attributes:
-        __screen (pygame.Surface): Window screen where object are drawn
-        parameters (WindowParameters): Parameters of the current application window
+        __screen (pygame.Surface): Window screen where object are drawna
         __width (int): Window width
         __height (int): Window height
     """
@@ -43,7 +42,7 @@ class Window:
         """Updates pygame.display.
 
         Returns:
-            Window: itself
+            Simulator: itself
         """
         pygame.display.update()
         return self
@@ -57,7 +56,7 @@ class Window:
             ozomap (OzoMap): Map to be drawn
 
         Returns:
-            Window: itself
+            Simulator: itself
         """
         self.__screen.fill(Colors.WHITE)
 
@@ -75,7 +74,7 @@ class Window:
             positions (list[Tiles]): Agent's position list during plan execution
 
         Returns:
-            Window: itself
+            Simulator: itself
         """
         half_size = self.config.tile_size / 2
         points = [pos.origin.moved(half_size, half_size) for pos in positions]
@@ -94,7 +93,7 @@ class Window:
         """
         tile_size = self.config.tile_size
         if tile.start_agent > 0 and tile.finish_agent > 0:
-            pass # TODO: Red and green stripes fill
+            self.__draw_double_color_tile(tile, 10)
         elif tile.start_agent > 0:
             self.__screen.fill(Colors.START, [tile.origin.x, tile.origin.y, tile_size, tile_size])
         elif tile.finish_agent > 0:
@@ -102,6 +101,19 @@ class Window:
 
         pygame.draw.rect(self.__screen, Colors.GREY, [tile.origin.x, tile.origin.y, tile_size, tile_size],
                          self.config.tile_border_width)
+
+    def __draw_double_color_tile(self, tile, splits):
+        colors = [Colors.START, Colors.FINISH]
+        current_color = 0
+        tile_size = self.config.tile_size
+        part_size = tile_size / splits
+        for part_x in range(splits):
+            for part_y in range(splits):
+                x = tile.origin.x + part_x * part_size
+                y = tile.origin.y + part_y * part_size
+                self.__screen.fill(colors[current_color], [x, y, part_size, part_size])
+                current_color = 1 - current_color
+            current_color = 1 - current_color
 
     def __draw_walls(self, ozomap):
         """Method all walls in the map.
