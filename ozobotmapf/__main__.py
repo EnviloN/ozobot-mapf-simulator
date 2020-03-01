@@ -14,7 +14,12 @@ from ozobotmapf.utils.constants import Values
 
 
 def run_simulation(config):
-    logging.info("Starting main simulation process.")
+    """Function runs the Simulator process
+
+    Args:
+        config (Configuration): Application configuration parameters
+    """
+    logging.info("Starting Simulator process.")
 
     ozomap = OzoMap(config).load_map(config)
     solver = init_solver(config)
@@ -32,17 +37,22 @@ def run_simulation(config):
 
     wait()
 
-    logging.info("Main simulation process finished successfully.")
+    logging.info("The Simulator process finished successfully.")
 
 
 def run_editor(config):
-    logging.info("Starting main simulation process.")
+    """Function runs the Map Editor process
+
+    Args:
+        config (Configuration): Application configuration parameters
+    """
+    logging.info("Starting Map Editor process.")
     ozomap = OzoMap(config)
 
     editor = Editor(ozomap, config)
     editor.run()
 
-    logging.info("Main simulation process finished successfully.")
+    logging.info("The Map Editor process finished successfully.")
 
 
 def configure_application():

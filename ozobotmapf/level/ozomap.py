@@ -3,6 +3,7 @@ import re
 import itertools
 
 from ozobotmapf.graphics.point import Point
+from ozobotmapf.level.grid import Grid
 from ozobotmapf.level.ozomap_exception import OzoMapException
 from ozobotmapf.level.tile import Tile
 
@@ -14,9 +15,7 @@ class OzoMap:
         width (int): True width of the level
         height (int): True height of the level
         agent_cnt (int): Number of agents on the level
-        origin (Point): Top-left point of the level
-        tile_size (int): Length of the tile side
-        grid (list[list[Tile]]): 2D grid of tiles
+        grid (Grid): 2D grid of tiles
     """
 
     def __init__(self, config):
@@ -28,14 +27,8 @@ class OzoMap:
             config (Configuration): Application configuration parameters
         """
         self.width, self.height, self.agent_cnt = 0, 0, 0
-        self.origin = config.map_origin
-        self.tile_size = config.tile_size
+        self.grid = Grid(config)
         config.tile_size += 1  # This needs to be done for tile borders to overlap during drawing
-        self.grid = [[Tile(Point(0, 0)) for _ in range(config.max_map_height)] for _ in
-                     range(config.max_map_width)]
-        for x in range(len(self.grid)):
-            for y in range(len(self.grid[0])):
-                self.grid[x][y] = Tile(self.origin.moved(x * self.tile_size, y * self.tile_size))
 
     def init_empty_map(self, config):
         """Initialize an empty level only with border walls.
@@ -45,16 +38,15 @@ class OzoMap:
         self.width, self.height, self.agent_cnt = config.map_width, config.map_height, config.map_agent_count
         self.__validate_attributes()
 
-        for x in range(self.width):
-            for y in range(self.height):
-                if y == 0:
-                    self.grid[x][y].walls[0] = True
-                if y == (self.height - 1):
-                    self.grid[x][y].walls[2] = True
-                if x == 0:
-                    self.grid[x][y].walls[3] = True
-                if x == (self.width - 1):
-                    self.grid[x][y].walls[1] = True
+        for tile in self.map_tile_generator():
+            if tile.y_pos == 0:
+                tile.build_upper_wall()
+            if tile.y_pos == (self.height - 1):
+                tile.build_bottom_wall()
+            if tile.x_pos == 0:
+                tile.build_left_wall()
+            if tile.x_pos == (self.width - 1):
+                tile.build_right_wall()
 
         logging.info("Empty Map successfully initialized.")
 
@@ -83,6 +75,20 @@ class OzoMap:
 
         return self
 
+    def get_origin(self):
+        """Getter for the map (grid) origin.
+
+        Returns:
+            Point: Origin of the map grid
+        """
+        return self.grid.get_origin()
+
+    def map_tile_generator(self):
+        """Map tile generator that yields all map tiles."""
+        for x in range(self.width):
+            for y in range(self.height):
+                yield self.grid.get_tile(x, y)
+
     def get_tiles_from_agent_positions(self, positions, waiting=True):
         """Method returns list of tiles for given agent's position list.
 
@@ -100,7 +106,7 @@ class OzoMap:
 
     def __validate_attributes(self):
         """Method validates level width, height and agent count."""
-        if self.width > len(self.grid) or self.height > len(self.grid[0]):
+        if self.width > self.grid.width or self.height > self.grid.height:
             raise_exception("Map is too big for the target display.")
         if self.agent_cnt > self.width * self.height:
             raise_exception("Too many agents in the level.")
@@ -134,9 +140,9 @@ class OzoMap:
         for tile in tiles:
             tile_id, start, end = map(int, re.compile("\((\d+),(\d+),(\d+)\)").match(tile).groups())
             x, y = self.__get_position_from_id(tile_id)
-            self.grid[x][y].start_agent = start
-            self.grid[x][y].finish_agent = end
-            self.grid[x][y].walls = [True] * 4
+            self.grid.get_tile(x, y).agent_start = start
+            self.grid.get_tile(x, y).agent_finish = end
+            self.grid.get_tile(x, y).build_all_walls()
 
     def __destroy_walls(self, edges):
         """Method destroys excessive walls around tiles.
@@ -154,18 +160,18 @@ class OzoMap:
 
             if x_from == x_to:
                 if y_from < y_to:
-                    self.grid[x_from][y_from].destroy_bottom_wall()
-                    self.grid[x_to][y_to].destroy_upper_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_bottom_wall()
+                    self.grid.get_tile(x_to, y_to).destroy_upper_wall()
                 else:
-                    self.grid[x_from][y_from].destroy_upper_wall()
-                    self.grid[x_to][y_to].destroy_bottom_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_upper_wall()
+                    self.grid.get_tile(x_to, y_to).destroy_bottom_wall()
             elif y_from == y_to:
                 if x_from < x_to:
-                    self.grid[x_from][y_from].destroy_right_wall()
-                    self.grid[x_to][y_to].destroy_left_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_right_wall()
+                    self.grid.get_tile(x_to, y_to).destroy_left_wall()
                 else:
-                    self.grid[x_from][y_from].destroy_left_wall()
-                    self.grid[x_to][y_to].destroy_right_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_left_wall()
+                    self.grid.get_tile(x_to, y_to).destroy_right_wall()
 
     def __get_tile_by_id(self, tile_id):
         """Method returns a tile instance with given tile_id
@@ -177,7 +183,7 @@ class OzoMap:
             Tile: Instance of tile with given tile_id
         """
         x, y = self.__get_position_from_id(tile_id)
-        return self.grid[x][y]
+        return self.grid.get_tile(x, y)
 
     def __get_position_from_id(self, tile_id):
         """Method computes which tile (row and column) corresponds to tile ID.

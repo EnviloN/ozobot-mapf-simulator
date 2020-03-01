@@ -58,9 +58,8 @@ class Simulator:
         """
         self.__screen.fill(Colors.WHITE)
 
-        for x in range(len(ozomap.grid)):
-            for y in range(len(ozomap.grid[0])):
-                self.__draw_tile(ozomap.grid[x][y])
+        for tile in ozomap.grid.tile_generator():
+            self.__draw_tile(tile)
 
         self.__draw_walls(ozomap)
         return self
@@ -90,11 +89,11 @@ class Simulator:
             tile (Tile): A tile to be drawn
         """
         tile_size = self.config.tile_size
-        if tile.start_agent > 0 and tile.finish_agent > 0:
+        if tile.agent_start > 0 and tile.agent_finish > 0:
             self.__draw_double_color_tile(tile, 10)
-        elif tile.start_agent > 0:
+        elif tile.agent_start > 0:
             self.__screen.fill(Colors.START, [tile.origin.x, tile.origin.y, tile_size, tile_size])
-        elif tile.finish_agent > 0:
+        elif tile.agent_finish > 0:
             self.__screen.fill(Colors.FINISH, [tile.origin.x, tile.origin.y, tile_size, tile_size])
 
         pygame.draw.rect(self.__screen, Colors.GREY, [tile.origin.x, tile.origin.y, tile_size, tile_size],
@@ -119,13 +118,11 @@ class Simulator:
         Args:
             ozomap (OzoMap): Map that is being drawn
         """
-        for x in range(len(ozomap.grid)):
-            for y in range(len(ozomap.grid[0])):
-                tile = ozomap.grid[x][y]
-                if tile.has_upper_wall(): self.__draw_upper_wall(tile.origin)
-                if tile.has_right_wall(): self.__draw_right_wall(tile.origin)
-                if tile.has_bottom_wall(): self.__draw_bottom_wall(tile.origin)
-                if tile.has_left_wall(): self.__draw_left_wall(tile.origin)
+        for tile in ozomap.grid.tile_generator():
+            if tile.has_upper_wall(): self.__draw_upper_wall(tile.origin)
+            if tile.has_right_wall(): self.__draw_right_wall(tile.origin)
+            if tile.has_bottom_wall(): self.__draw_bottom_wall(tile.origin)
+            if tile.has_left_wall(): self.__draw_left_wall(tile.origin)
 
     def __draw_line_between_tiles(self, tile_from, tile_to):
         """Method draws following line between two tiles.

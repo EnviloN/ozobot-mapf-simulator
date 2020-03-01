@@ -1,52 +1,103 @@
+from ozobotmapf.graphics.point import Point
+
+
 class Tile:
     """Class represents a level tile.
 
     Attributes:
         origin (Point): Top-left point of the tile
-        start_agent (int): ID of an agent that has starting point here (else 0)
-        finish_agent (int): ID of an agent that has finish point here (else 0)
-        walls (list[bool]): Flags if there are walls around the tile (Format: [upper, right, bottom, left])
+        agent_start (int): ID of an agent that has starting point here (else 0)
+        agent_finish (int): ID of an agent that has finish point here (else 0)
+        __walls (list[bool]): Flags if there are walls around the tile (Format: [upper, right, bottom, left])
     """
 
-    def __init__(self, origin):
+    def __init__(self, origin=Point(0, 0), x_pos=0, y_pos=0):
         """Initialization of the Tile instance.
 
         Args:
             origin (Point): Top-left point of the tile
         """
-        self.origin = origin
-        self.start_agent = 0
-        self.finish_agent = 0
-        self.walls = [False] * 4  # [upper, right, bottom, left]
+        self.origin, self.x_pos, self.y_pos = origin, x_pos, y_pos
+        self.agent_start = 0
+        self.agent_finish = 0
+        self.__walls = [False] * 4  # [upper, right, bottom, left]
 
-    def destroy_upper_wall(self):
-        """Sets upper wall to False."""
-        self.walls[0] = False
+    def is_start(self):
+        """Returns true if there is an agent's start on the tile."""
+        return True if self.agent_start > 0 else False
 
-    def destroy_right_wall(self):
-        """Sets right wall to False."""
-        self.walls[1] = False
-
-    def destroy_bottom_wall(self):
-        """Sets bottom wall to False."""
-        self.walls[2] = False
-
-    def destroy_left_wall(self):
-        """Sets left wall to False."""
-        self.walls[3] = False
+    def is_finish(self):
+        """Returns true if there is an agent's finish on the tile."""
+        return True if self.agent_finish > 0 else False
 
     def has_upper_wall(self):
         """Getter for upper wall."""
-        return self.walls[0] is True
+        return self.__walls[0] is True
 
     def has_right_wall(self):
         """Getter for right wall."""
-        return self.walls[1] is True
+        return self.__walls[1] is True
 
     def has_bottom_wall(self):
         """Getter for bottom wall."""
-        return self.walls[2] is True
+        return self.__walls[2] is True
 
     def has_left_wall(self):
         """Getter for left wall."""
-        return self.walls[3] is True
+        return self.__walls[3] is True
+
+    def build_all_walls(self):
+        """Sets all walls to True."""
+        self.__walls = [True] * 4
+
+    def build_upper_wall(self):
+        """Sets upper wall to True."""
+        self.__walls[0] = True
+
+    def build_right_wall(self):
+        """Sets right wall to True."""
+        self.__walls[1] = True
+
+    def build_bottom_wall(self):
+        """Sets bottom wall to True."""
+        self.__walls[2] = True
+
+    def build_left_wall(self):
+        """Sets left wall to True."""
+        self.__walls[3] = True
+
+    def destroy_all_walls(self):
+        """Sets all walls to False."""
+        self.__walls = [False] * 4
+
+    def destroy_upper_wall(self):
+        """Sets upper wall to False."""
+        self.__walls[0] = False
+
+    def destroy_right_wall(self):
+        """Sets right wall to False."""
+        self.__walls[1] = False
+
+    def destroy_bottom_wall(self):
+        """Sets bottom wall to False."""
+        self.__walls[2] = False
+
+    def destroy_left_wall(self):
+        """Sets left wall to False."""
+        self.__walls[3] = False
+
+    def toggle_upper_wall(self):
+        """Sets upper wall to the opposite value."""
+        self.__walls[0] = not self.__walls[0]
+
+    def toggle_right_wall(self):
+        """Sets right wall to the opposite value."""
+        self.__walls[1] = not self.__walls[1]
+
+    def toggle_bottom_wall(self):
+        """Sets bottom wall to the opposite value."""
+        self.__walls[2] = not self.__walls[2]
+
+    def toggle_left_wall(self):
+        """Sets left wall to the opposite value."""
+        self.__walls[3] = not self.__walls[3]

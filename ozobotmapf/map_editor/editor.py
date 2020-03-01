@@ -134,21 +134,20 @@ class Editor:
         self.__update()
 
     def __draw_tiles(self):
-        for x in range(len(self.ozomap.grid)):
-            for y in range(len(self.ozomap.grid[0])):
-                self.__draw_tile(self.ozomap.grid[x][y])
+        for tile in self.ozomap.grid.tile_generator():
+                self.__draw_tile(tile)
 
     def __draw_tile(self, tile):
         tile_size = self.config.tile_size
-        if tile.start_agent > 0 and tile.finish_agent > 0:
+        if tile.agent_start > 0 and tile.agent_finish > 0:
             self.__draw_double_color_tile(tile, 10)
-            self.__render_text_in_tile(tile, "S: {} / F: {}".format(tile.start_agent, tile.finish_agent))
-        elif tile.start_agent > 0:
+            self.__render_text_in_tile(tile, "S: {} / F: {}".format(tile.agent_start, tile.agent_finish))
+        elif tile.agent_start > 0:
             self.__screen.fill(Colors.START, [tile.origin.x, tile.origin.y, tile_size, tile_size])
-            self.__render_text_in_tile(tile, "S: {}".format(tile.start_agent))
-        elif tile.finish_agent > 0:
+            self.__render_text_in_tile(tile, "S: {}".format(tile.agent_start))
+        elif tile.agent_finish > 0:
             self.__screen.fill(Colors.FINISH, [tile.origin.x, tile.origin.y, tile_size, tile_size])
-            self.__render_text_in_tile(tile, "F: {}".format(tile.finish_agent))
+            self.__render_text_in_tile(tile, "F: {}".format(tile.agent_finish))
 
         pygame.draw.rect(self.__screen, Colors.GREY, [tile.origin.x, tile.origin.y, tile_size, tile_size],
                          self.config.tile_border_width)
@@ -174,17 +173,15 @@ class Editor:
         self.__screen.blit(text, text_rect)
 
     def __draw_walls(self):
-        for x in range(len(self.ozomap.grid)):
-            for y in range(len(self.ozomap.grid[0])):
-                tile = self.ozomap.grid[x][y]
-                if tile.has_upper_wall():
-                    self.__draw_upper_wall(tile.origin)
-                if tile.has_right_wall():
-                    self.__draw_right_wall(tile.origin)
-                if tile.has_bottom_wall():
-                    self.__draw_bottom_wall(tile.origin)
-                if tile.has_left_wall():
-                    self.__draw_left_wall(tile.origin)
+        for tile in self.ozomap.grid.tile_generator():
+            if tile.has_upper_wall():
+                self.__draw_upper_wall(tile.origin)
+            if tile.has_right_wall():
+                self.__draw_right_wall(tile.origin)
+            if tile.has_bottom_wall():
+                self.__draw_bottom_wall(tile.origin)
+            if tile.has_left_wall():
+                self.__draw_left_wall(tile.origin)
 
     def __draw_upper_wall(self, tile_origin):
         """Method draws upper wall of a tile.
@@ -271,12 +268,11 @@ class Editor:
 
     def __handle_wall_toggle(self, pos):
         if self.__is_pos_on_border(pos):
-            for x in range(self.config.map_width):
-                for y in range(self.config.map_height):
-                    self.__toggle_tile_walls_if_hit(self.ozomap.grid[x][y], pos)
+            for tile in self.ozomap.map_tile_generator():
+                self.__toggle_tile_walls_if_hit(tile, pos)
 
     def __is_pos_on_border(self, pos):
-        origin = self.ozomap.origin
+        origin = self.ozomap.get_origin()
 
         for ith_col in range(1, self.config.map_width):
             x_border = origin.x + ith_col * self.config.tile_size
@@ -297,13 +293,13 @@ class Editor:
         xo, yo = tile.origin.x, tile.origin.y
         t, ts = self.click_tolerance, self.config.tile_size
         if (yo-t <= yp <= yo+t) and (xo+t <= xp <= xo+ts-t):
-            tile.walls[0] = not tile.walls[0]
+            tile.toggle_upper_wall()
         if (xo+ts-t <= xp <= xo+ts+t) and (yo+t <= yp <= yo+ts-t):
-            tile.walls[1] = not tile.walls[1]
+            tile.toggle_right_wall()
         if (yo+ts-t <= yp <= yo+ts+t) and (xo+t <= xp <= xo+ts-t):
-            tile.walls[2] = not tile.walls[2]
+            tile.toggle_bottom_wall()
         if (xo-t <= xp <= xo+t) and (yo+t <= yp <= yo+ts-t):
-            tile.walls[3] = not tile.walls[3]
+            tile.toggle_left_wall()
 
     def __handle_tile_toggle(self, pos):
         tile = self.__get_tile_from_position(pos)
@@ -314,32 +310,32 @@ class Editor:
                 self.__handle_tile_finish_toggle(tile)
 
     def __get_tile_from_position(self, pos):
-        x = math.floor((pos.x - self.ozomap.origin.x) / self.config.tile_size)
-        y = math.floor((pos.y - self.ozomap.origin.y) / self.config.tile_size)
+        x = math.floor((pos.x - self.ozomap.get_origin().x) / self.config.tile_size)
+        y = math.floor((pos.y - self.ozomap.get_origin().y) / self.config.tile_size)
         if 0 <= x < self.config.map_width and 0 <= y < self.config.map_height:
-            return self.ozomap.grid[x][y]
+            return self.ozomap.grid.get_tile(x, y)
         else:
             return None
 
     def __handle_tile_start_toggle(self, tile):
-        if tile.start_agent > 0:
-            if tile.start_agent in self.starts:
+        if tile.agent_start > 0:
+            if tile.agent_start in self.starts:
                 raise EditorException("Agent Starts contains already placed start.")
-            heapq.heappush(self.starts, tile.start_agent)
-            tile.start_agent = 0
+            heapq.heappush(self.starts, tile.agent_start)
+            tile.agent_start = 0
         else:
             if len(self.starts) > 0:
-                tile.start_agent = heapq.heappop(self.starts)
+                tile.agent_start = heapq.heappop(self.starts)
 
     def __handle_tile_finish_toggle(self, tile):
-        if tile.finish_agent > 0:
-            if tile.finish_agent in self.ends:
+        if tile.agent_finish > 0:
+            if tile.agent_finish in self.ends:
                 raise EditorException("Agent Starts contains already placed start.")
-            heapq.heappush(self.ends, tile.finish_agent)
-            tile.finish_agent = 0
+            heapq.heappush(self.ends, tile.agent_finish)
+            tile.agent_finish = 0
         else:
             if len(self.ends) > 0:
-                tile.finish_agent = heapq.heappop(self.ends)
+                tile.agent_finish = heapq.heappop(self.ends)
 
     def __save_map(self):
         map_name = self.__get_map_name_from_user()
@@ -393,18 +389,15 @@ class Editor:
     def __save_to_file(self, name):
         lines = ["V =\n"]
         tile_id = 0
-        for x in range(self.config.map_height):
-            for y in range(self.config.map_width):
-                tile = self.ozomap.grid[y][x]
-                lines.append("({},{},{})\n".format(tile_id, tile.start_agent, tile.finish_agent))
-                tile_id += 1
+        for tile in self.ozomap.grid.tile_generator():
+            lines.append("({},{},{})\n".format(tile_id, tile.agent_start, tile.agent_finish))
+            tile_id += 1
         lines.append("E =\n")
         tile_id = 0
-        for x in range(self.config.map_height):
-            for y in range(self.config.map_width):
-                if not self.ozomap.grid[y][x].walls[2]:
+        for tile in self.ozomap.grid.tile_generator():
+                if not tile.has_bottom_wall():
                     lines.append("{" + "{},{}".format(tile_id, tile_id + self.config.map_width) + "}\n")
-                if not self.ozomap.grid[y][x].walls[1]:
+                if not tile.has_right_wall():
                     lines.append("{" + "{},{}".format(tile_id, tile_id + 1) + "}\n")
                 tile_id += 1
 
