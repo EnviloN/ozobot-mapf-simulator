@@ -10,7 +10,7 @@ Welcome to Ozobot MAPF Simulator's documentation!
    :maxdepth: 3
    :caption: Contents:
 
-.. automodule:: src
+.. automodule:: ozobotmapf
 
 Indices and tables
 ==================
