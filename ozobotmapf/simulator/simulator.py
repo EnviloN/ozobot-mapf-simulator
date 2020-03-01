@@ -1,16 +1,14 @@
 import logging
 import pygame
 
-from src.graphics.point import Point
-from src.map.ozomap import OzoMap
-from src.utils.constants import Colors, Values
+from ozobotmapf.utils.constants import Values, Colors
 
 
 class Simulator:
     """Class handles object rendering on the screen and Window state.
 
     Attributes:
-        __screen (pygame.Surface): Window screen where object are drawna
+        __screen (pygame.Surface): Window screen where object are drawn
         __width (int): Window width
         __height (int): Window height
     """
@@ -48,7 +46,7 @@ class Simulator:
         return self
 
     def draw_map(self, ozomap):
-        """Method draws given map to the screen.
+        """Method draws given level to the screen.
 
         Firstly, all tiles are drawn, and then all walls are drawn.
 
@@ -116,7 +114,7 @@ class Simulator:
             current_color = 1 - current_color
 
     def __draw_walls(self, ozomap):
-        """Method all walls in the map.
+        """Method all walls in the level.
 
         Args:
             ozomap (OzoMap): Map that is being drawn
@@ -178,7 +176,7 @@ class Simulator:
                               tile_origin)
 
     # def draw_tile_grid(self, ozomap):
-    #     """Method draws map tile grid on the screen.
+    #     """Method draws level tile grid on the screen.
     #
     #     Tiles are not drawn individually. All horizontal lines are drawn, then all vertical lines.
     #

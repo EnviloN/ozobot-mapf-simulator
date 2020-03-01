@@ -2,7 +2,7 @@ import logging
 import os.path
 from configparser import ConfigParser
 
-from src.configuration.config_exceptions import InvalidConfigOptionException
+from ozobotmapf.configuration.config_exceptions import InvalidConfigOptionException
 
 
 class ConfigOptions:

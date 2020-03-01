@@ -1,14 +1,14 @@
 import logging
 import math
 
-from src.graphics.point import Point
+from ozobotmapf.graphics.point import Point
 
 
 class Configuration:
     """Class computes and stores required configuration parameters that will be used throughout the application.
 
     Attributes:
-        map_path (str): Path to the map file
+        map_path (str): Path to the level file
         solver_path (str): Path to the solver executable
         fullscreen (bool): Flag if fullscreen mode is on
         window_width (int): Width of the window in pixels
@@ -18,14 +18,14 @@ class Configuration:
         tile_border_width (int): Width of the tile line in pixels
         line_width (int): Width of the following line in pixels
         wall_width (int): Width of the wall line in pixels
-        max_map_width (int): Maximal map width in tiles
-        max_map_height (int): Maximal map height in tiles
-        top_margin (int): Distance between top of the window and top of the map in pixels
-        left_margin (int): Distance between left border of the window and left border of the map in pixels
-        map_origin (Point): Top-left point of the map
-        map_width (int): Width of the map in tiles
-        map_height (int): Height of the map in tiles
-        map_agent_count (int): Number of agents on the map
+        max_map_width (int): Maximal level width in tiles
+        max_map_height (int): Maximal level height in tiles
+        top_margin (int): Distance between top of the window and top of the level in pixels
+        left_margin (int): Distance between left border of the window and left border of the level in pixels
+        map_origin (Point): Top-left point of the level
+        map_width (int): Width of the level in tiles
+        map_height (int): Height of the level in tiles
+        map_agent_count (int): Number of agents on the level
     """
 
     def __init__(self, cli, config):
@@ -78,8 +78,8 @@ class Configuration:
                "Tile border width: {}px\n" \
                "Following line width: {}px\n" \
                "Wall line width: {}px\n" \
-               "Max map width: {}\n" \
-               "Max map height: {}\n" \
+               "Max level width: {}\n" \
+               "Max level height: {}\n" \
                "Top margin: {}px\n" \
                "Left margin: {}px\n" \
                "Map Origin: [{}, {}]\n" \

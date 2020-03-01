@@ -3,8 +3,8 @@ import os.path
 import re
 
 from argparse import ArgumentParser
-from src.configuration.config_exceptions import InvalidCLIOptionException
-from src.utils.constants import Values
+from ozobotmapf.configuration.config_exceptions import InvalidCLIOptionException
+from ozobotmapf.utils.constants import Values
 
 
 class CLIOptions:
@@ -45,16 +45,16 @@ class CLIOptions:
                                    help='Window resolution to be used [Width, Height].')
         self.__parser.add_argument('-f', '--full-screen', dest='fullscreen', action='store_true',
                                    help='Window is run in fullscreen mode.')
-        self.__parser.add_argument('-m', '--map', type=str, dest='map_file',
+        self.__parser.add_argument('-m', '--level', type=str, dest='map_file',
                                    help='Map of the problem.')
-        self.__parser.add_argument('-ma', '--map-attributes', nargs=3, type=int, dest='map_attributes',
+        self.__parser.add_argument('-ma', '--level-attributes', nargs=3, type=int, dest='map_attributes',
                                    help='Map attributes: Width, height, number of agents.')
         self.__parser.add_argument('-d', '--debug', dest='debug', action='store_true',
                                    help='Log debugging messages.')
         self.__parser.add_argument('-c', '--config_file', type=str, dest='config_file',
                                    help='Application configuration file.')
         self.__parser.add_argument('-e', '--editor', dest='editor', action='store_true',
-                                   help='Start map editor.')
+                                   help='Start level editor.')
 
     def __validate_arguments(self):
         """Validates parsed command-line parameter values."""
@@ -67,27 +67,27 @@ class CLIOptions:
         self.__validate_config_file()
 
     def __validate_map_attributes(self):
-        """Method validates map attributes.
+        """Method validates level attributes.
 
-        Method checks if parameter -ma is used. It tries to get the attributes from map file name. If this fails,
+        Method checks if parameter -ma is used. It tries to get the attributes from level file name. If this fails,
         exception is thrown.
         """
         if self.args.map_attributes is None:
             numbers_in_name = [int(x) for x in re.findall(r'\d+', os.path.basename(self.args.map_file))]
             if len(numbers_in_name) < 3:
-                assert_argument(False, "You have to define the map attributes with -ma parameter.")
+                assert_argument(False, "You have to define the level attributes with -ma parameter.")
             self.args.map_attributes = numbers_in_name[:3]
-            logging.warning("You should use the `-ma` parameter to define map width, height and agent count. "
-                            "This time first three numbers from the map file name were used as map attributes.")
+            logging.warning("You should use the `-ma` parameter to define level width, height and agent count. "
+                            "This time first three numbers from the level file name were used as level attributes.")
 
     def __validate_map(self):
-        """Method validates if the map command-line parameter contains a path to a valid file."""
-        assert_argument(self.args.map_file is not None, "You have to provide a map.")
+        """Method validates if the level command-line parameter contains a path to a valid file."""
+        assert_argument(self.args.map_file is not None, "You have to provide a level.")
         if not os.path.isfile(self.args.map_file):
             if os.path.isfile(Values.MAPS_PATH + self.args.map_file):
                 self.args.map_file = Values.MAPS_PATH + self.args.map_file
             else:
-                assert_argument(False, "Map has to be a path to a file or a map name from `resources/maps/` folder.")
+                assert_argument(False, "Map has to be a path to a file or a level name from `resources/maps/` folder.")
 
     def __validate_config_file(self):
         """Method validates if the config file command-line parameter contains a path to a valid file."""

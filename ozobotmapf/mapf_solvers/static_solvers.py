@@ -2,15 +2,15 @@ import logging
 import subprocess
 import re
 
-from src.mapf_solvers.solver import Solver
-from src.mapf_solvers.solver_exception import SubprocessSolverException
+from ozobotmapf.mapf_solvers.solver import Solver
+from ozobotmapf.mapf_solvers.solver_exception import SubprocessSolverException
 
 
 class SubprocessSolver(Solver):
     """Abstract class for all external solvers that needs to be run as a subprocess.
 
     Note:
-        The args attribute also contains a path to a map.
+        The args attribute also contains a path to a level.
 
     Attributes:
         solver_path (str): Path to the solver file that is an executable
@@ -48,7 +48,7 @@ class MapfSolverBoOX(SubprocessSolver):
     """Class for the mapf_solver_boOX.
 
     Note:
-        The args attribute also contains a path to a map.
+        The args attribute also contains a path to a level.
 
     Attributes:
         solver_path (str): Path to the solver file that is an executable

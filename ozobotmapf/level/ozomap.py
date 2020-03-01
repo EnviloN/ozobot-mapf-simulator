@@ -2,19 +2,19 @@ import logging
 import re
 import itertools
 
-from src.graphics.point import Point
-from src.map.ozomap_exception import OzoMapException
-from src.map.tile import Tile
+from ozobotmapf.graphics.point import Point
+from ozobotmapf.level.ozomap_exception import OzoMapException
+from ozobotmapf.level.tile import Tile
 
 
 class OzoMap:
-    """Class represents the map of the problem.
+    """Class represents the level of the problem.
 
     Attributes:
-        width (int): True width of the map
-        height (int): True height of the map
-        agent_cnt (int): Number of agents on the map
-        origin (Point): Top-left point of the map
+        width (int): True width of the level
+        height (int): True height of the level
+        agent_cnt (int): Number of agents on the level
+        origin (Point): Top-left point of the level
         tile_size (int): Length of the tile side
         grid (list[list[Tile]]): 2D grid of tiles
     """
@@ -38,7 +38,7 @@ class OzoMap:
                 self.grid[x][y] = Tile(self.origin.moved(x * self.tile_size, y * self.tile_size))
 
     def init_empty_map(self, config):
-        """Initialize an empty map only with border walls.
+        """Initialize an empty level only with border walls.
 
         Args:
             config (Configuration): Application configuration parameters"""
@@ -59,10 +59,10 @@ class OzoMap:
         logging.info("Empty Map successfully initialized.")
 
     def load_map(self, config):
-        """Method loads map from a file.
+        """Method loads level from a file.
 
-        First, the map height and width are set, as well as number of agents. These parameters are validated and then
-        the map is built.
+        First, the level height and width are set, as well as number of agents. These parameters are validated and then
+        the level is built.
 
         Args:
             config (Configuration): Application configuration
@@ -70,7 +70,7 @@ class OzoMap:
         Returns:
             OzoMap: itself
         """
-        logging.info("Loading map.")
+        logging.info("Loading level.")
         with open(config.map_path, "r") as file:
             lines = file.readlines()
 
@@ -99,19 +99,19 @@ class OzoMap:
             return [self.__get_tile_by_id(tile_id) for tile_id in [group[0] for group in itertools.groupby(positions)]]
 
     def __validate_attributes(self):
-        """Method validates map width, height and agent count."""
+        """Method validates level width, height and agent count."""
         if self.width > len(self.grid) or self.height > len(self.grid[0]):
             raise_exception("Map is too big for the target display.")
         if self.agent_cnt > self.width * self.height:
-            raise_exception("Too many agents in the map.")
+            raise_exception("Too many agents in the level.")
 
     def __build_map(self, lines):
-        """Method builds the map from graph representation.
+        """Method builds the level from graph representation.
 
         Map tiles are initialized, then all the excessive walls are destroyed.
 
         Args:
-            lines (list[str]): Lines from the map file containing the graph representation of the map.
+            lines (list[str]): Lines from the level file containing the graph representation of the level.
         """
         if lines[0] != "V =\n" or lines[self.width * self.height + 1] != "E =\n":
             raise_exception("OzoMap file has invalid syntax.")
@@ -123,13 +123,13 @@ class OzoMap:
         self.__destroy_walls(edges)
 
     def __init_tiles(self, tiles):
-        """Method initializes all map tiles.
+        """Method initializes all level tiles.
 
         All four walls are built (set to True) around the tile and if there is a start/end point for any agent
         on the tile, these values are updated.
 
         Args:
-            tiles (list[str]): Lines from map file that contain tiles (graph vertices)
+            tiles (list[str]): Lines from level file that contain tiles (graph vertices)
         """
         for tile in tiles:
             tile_id, start, end = map(int, re.compile("\((\d+),(\d+),(\d+)\)").match(tile).groups())
@@ -145,7 +145,7 @@ class OzoMap:
         tiles.
 
         Args:
-            edges (list[str]): Lines from map file that contain graph edges
+            edges (list[str]): Lines from level file that contain graph edges
         """
         for edge in edges:
             from_id, to_id = map(int, re.compile("{(\d+),(\d+)}").match(edge).groups())

@@ -18,8 +18,8 @@ class Values:
     APP_NAME = "Ozobot MAPF Simulator"
     EDITOR_NAME = "Ozobot MAPF Map Editor"
 
-    CONFIGS_PATH = "resources/config/"
-    MAPS_PATH = "resources/maps/"
-    LOGS_PATH = "resources/logs/"
+    CONFIGS_PATH = "../resources/config/"
+    MAPS_PATH = "../resources/maps/"
+    LOGS_PATH = "../resources/logs/"
 
     MAP_FILE_EXT = ".ozomap"

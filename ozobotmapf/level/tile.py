@@ -1,5 +1,5 @@
 class Tile:
-    """Class represents a map tile.
+    """Class represents a level tile.
 
     Attributes:
         origin (Point): Top-left point of the tile

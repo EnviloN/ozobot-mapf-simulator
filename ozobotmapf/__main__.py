@@ -3,14 +3,14 @@ import pygame
 from pygame.locals import *
 import sys
 
-from src.simulator.simulator import Simulator
-from src.map_editor.editor import Editor
-from src.configuration.configuration import SimulatorConfig, EditorConfig
-from src.configuration.cli_options import CLIOptions
-from src.configuration.config_options import ConfigOptions
-from src.map.ozomap import OzoMap
-from src.mapf_solvers.static_solvers import MapfSolverBoOX
-from src.utils.constants import Values
+from ozobotmapf.simulator.simulator import Simulator
+from ozobotmapf.map_editor.editor import Editor
+from ozobotmapf.configuration.configuration import EditorConfig, SimulatorConfig
+from ozobotmapf.configuration.cli_options import CLIOptions
+from ozobotmapf.configuration.config_options import ConfigOptions
+from ozobotmapf.mapf_solvers.static_solvers import MapfSolverBoOX
+from ozobotmapf.level.ozomap import OzoMap
+from ozobotmapf.utils.constants import Values
 
 
 def run_simulation(config):

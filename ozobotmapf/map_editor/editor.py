@@ -8,9 +8,9 @@ import enum
 from pygame.locals import *
 import heapq
 
-from src.graphics.point import Point
-from src.map_editor.EditorException import EditorException
-from src.utils.constants import Colors, Values
+from ozobotmapf.graphics.point import Point
+from ozobotmapf.map_editor.EditorException import EditorException
+from ozobotmapf.utils.constants import Colors, Values
 
 
 class Mode(enum.Enum):
@@ -73,7 +73,7 @@ class Editor:
         print("\n\nWelcome to the '{}'!".format(Values.EDITOR_NAME))
 
     def __get_map_attributes_from_user(self):
-        print("Please define the following attributes for your new map:")
+        print("Please define the following attributes for your new level:")
         self.__get_map_width_from_user()
         self.__get_map_height_from_user()
         self.__get_map_agent_cnt_from_user()
@@ -243,7 +243,7 @@ class Editor:
                     end = True
                 if event.type == KEYDOWN and event.key == K_RETURN:
                     if len(self.starts) == 0 and len(self.ends) == 0:
-                        logging.info("Quitting Map Editor and Saving map.")
+                        logging.info("Quitting Map Editor and Saving level.")
                         end, save = True, True
                     else:
                         print("You have to put dawn all agent starts and agent ends.")
@@ -350,18 +350,18 @@ class Editor:
         valid = False
         while not valid:
             automatic_name = self.__generate_automatic_map_name()
-            name = input("Enter new map name [{}]: ".format(automatic_name))
+            name = input("Enter new level name [{}]: ".format(automatic_name))
             name = automatic_name if name == "" else name
             if os.path.isfile(Values.MAPS_PATH + name + Values.MAP_FILE_EXT):
-                print("A map with this name already exists in '{}'!".format(Values.MAPS_PATH))
+                print("A level with this name already exists in '{}'!".format(Values.MAPS_PATH))
                 continue
             if not self.__valid_attributes_in_map_name(name):
-                print("It is advised that the map name has at least 3 numbers. "
-                      "First three numbers should be correct map attributes (in this case: {}, {}, {})."
+                print("It is advised that the level name has at least 3 numbers. "
+                      "First three numbers should be correct level attributes (in this case: {}, {}, {})."
                       .format(self.config.map_width, self.config.map_height, self.config.map_agent_count))
                 answer = ""
                 while answer != 'y' or answer != 'n':
-                    answer = input("Are you sure you want to use map name '{}'? (y/n): ".format(name)).lower()
+                    answer = input("Are you sure you want to use level name '{}'? (y/n): ".format(name)).lower()
                 if answer == 'y':
                     valid = True
             else:
