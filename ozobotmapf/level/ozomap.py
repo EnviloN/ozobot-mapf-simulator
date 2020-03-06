@@ -28,7 +28,6 @@ class OzoMap:
         """
         self.width, self.height, self.agent_cnt = 0, 0, 0
         self.grid = Grid(config)
-        config.tile_size += 1  # This needs to be done for tile borders to overlap during drawing
 
     def init_empty_map(self, config):
         """Initialize an empty level only with border walls.

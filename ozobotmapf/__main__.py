@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 import sys
 
+from ozobotmapf.simulator.simulator import Simulator
 from ozobotmapf.window.window import Window
 from ozobotmapf.map_editor.editor import Editor
 from ozobotmapf.configuration.configuration import EditorConfig, SimulatorConfig
@@ -19,28 +20,28 @@ def run_simulation(config):
     Args:
         config (Configuration): Application configuration parameters
     """
-    logging.info("Starting Simulator process.")
+    logging.info("Starting Simulator.")
 
     ozomap = OzoMap(config).load_map(config)
     solver = init_solver(config)
     plans = solver.plan()
 
-    # simulator = Simulator(ozomap, plans, config)
-    # simulator.run()
+    simulator = Simulator(ozomap, plans, config)
+    simulator.run()
 
-    window = Window(config)
-    window.draw_map(ozomap).update()
+    # window = Window(config)
+    # window.draw_map(ozomap).update()
+    #
+    # wait()
+    #
+    # for agent_id in plans:
+    #     window.draw_full_path(
+    #         ozomap.get_tiles_from_agent_positions(plans[agent_id]['pos_list'], False))
+    # window.update()
+    #
+    # wait()
 
-    wait()
-
-    for agent_id in plans:
-        window.draw_full_path(
-            ozomap.get_tiles_from_agent_positions(plans[agent_id]['pos_list'], False))
-    window.update()
-
-    wait()
-
-    logging.info("The Simulator process finished successfully.")
+    logging.info("The Simulator finished successfully.")
 
 
 def run_editor(config):
@@ -49,13 +50,13 @@ def run_editor(config):
     Args:
         config (Configuration): Application configuration parameters
     """
-    logging.info("Starting Map Editor process.")
+    logging.info("Starting Map Editor.")
     ozomap = OzoMap(config)
 
     editor = Editor(ozomap, config)
     editor.run()
 
-    logging.info("The Map Editor process finished successfully.")
+    logging.info("The Map Editor process finished.")
 
 
 def configure_application():

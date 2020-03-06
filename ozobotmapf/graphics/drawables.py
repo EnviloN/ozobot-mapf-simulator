@@ -73,3 +73,15 @@ class FillChecker(Drawable):
                 screen.fill(self.colors[current_color], [x, y, self.part_width, self.part_height])
                 current_color = 1 - current_color
             current_color = 1 - current_color
+
+
+class DrawableGroup(Drawable):
+    def __init__(self):
+        self.list = []
+
+    def draw(self, screen):
+        for drawable in self.list:
+            drawable.draw(screen)
+
+    def add_drawable(self, drawable):
+        self.list.append(drawable)

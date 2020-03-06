@@ -139,7 +139,7 @@ class Editor:
                 self.__draw_tile(tile)
 
     def __draw_tile(self, tile):
-        tile_size = self.config.tile_size
+        tile_size = self.config.tile_size + 1 # This needs to be done for tile borders to overlap during drawing
         rectangle = Rectangle(Point(tile.origin.x, tile.origin.y), tile_size, tile_size)
         if tile.agent_start > 0 and tile.agent_finish > 0:
             FillChecker(rectangle, Colors.START, Colors.FINISH).draw(self.__screen)
