@@ -56,18 +56,16 @@ class Simulator:
                 if event.type == pygame.KEYDOWN:  # and event.key == K_ESCAPE:
                     return
 
-    def __map_to_drawable(self):
-        drawables = [self.__positions_to_drawable(), self.__borders_to_drawable()]
-        return drawables
-
     def __draw_map(self):
-        id_from = 0
-        if not self.preview:
-            id_from += 1
-
         self.__screen.fill(Colors.WHITE)
-        for drawable in self.map_objects[id_from:]:
-            drawable.draw(self.__screen)
+
+        if self.preview:
+            self.map_objects[0].draw(self.__screen)
+
+        if self.config.display_grid:
+            self.map_objects[1].draw(self.__screen)
+
+        self.map_objects[2].draw(self.__screen)
         self.__update()
 
     def __update(self):

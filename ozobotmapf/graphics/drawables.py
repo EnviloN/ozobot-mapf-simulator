@@ -23,18 +23,18 @@ class Line(Drawable):
     def __elongate(self):
         if self.start.x == self.end.x:  # line is vertical
             if self.start.y < self.end.y:
-                self.start.y = self.start.y - math.floor(self.width / 2)
-                self.end.y = self.end.y + math.floor(self.width / 2)
+                self.start.y = self.start.y - math.floor(self.width / 2 - 1)
+                self.end.y = self.end.y + math.floor(self.width / 2 - 1)
             else:
-                self.start.y = self.start.y + math.floor(self.width / 2)
-                self.end.y = self.end.y - math.floor(self.width / 2)
+                self.start.y = self.start.y + math.floor(self.width / 2 - 1)
+                self.end.y = self.end.y - math.floor(self.width / 2 - 1)
         elif self.start.y == self.end.y:  # line is horizontal
             if self.start.x < self.end.x:
-                self.start.x = self.start.x - math.floor(self.width / 2)
-                self.end.x = self.end.x + math.floor(self.width / 2)
+                self.start.x = self.start.x - math.floor(self.width / 2 - 1)
+                self.end.x = self.end.x + math.floor(self.width / 2 - 1)
             else:
-                self.start.x = self.start.x + math.floor(self.width / 2)
-                self.end.x = self.end.x - math.floor(self.width / 2)
+                self.start.x = self.start.x + math.floor(self.width / 2 - 1)
+                self.end.x = self.end.x - math.floor(self.width / 2 - 1)
 
 
 class Rect(Drawable):

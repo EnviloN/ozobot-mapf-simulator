@@ -66,6 +66,8 @@ class Configuration:
 
         self.editor = cli.editor
 
+        self.display_grid = None
+
     def __str__(self):
         return "CONFIGURATION PARAMETERS:\n" \
                "Map path: '{}'\n" \
@@ -107,6 +109,8 @@ class SimulatorConfig(Configuration):
         self.map_path = cli.map_file
         self.solver_path = config["solver"]["path"]
         self.map_width, self.map_height, self.map_agent_count = cli.map_attributes
+
+        self.display_grid = config["simulator"]["display_borders"]
 
         logging.debug(str(self))
 

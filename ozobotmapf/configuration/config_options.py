@@ -57,7 +57,13 @@ class ConfigOptions:
         """
         options = {}
         for option in self.__raw_config.options(section):
-            options[option] = self.__raw_config.get(section, option)
+            if section == "simulator":
+                if option == "display_borders":
+                    options[option] = self.__raw_config.getboolean(section, option)
+            elif section == "ozobot":
+                options[option] = self.__raw_config.getfloat(section, option)
+            else:
+                options[option] = self.__raw_config.get(section, option)
 
         return options
 
@@ -69,6 +75,8 @@ class ConfigOptions:
         for section in self.config:
             if section == "solver":
                 self.__validate_solver_section()
+            elif section == "simulator":
+                pass
             else:
                 self.__validate_section(section)
 

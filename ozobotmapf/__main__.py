@@ -66,6 +66,7 @@ def configure_application():
         logging.getLogger().setLevel(logging.INFO)
 
     config = ConfigOptions(options.config_file).parse()
+    config.update(ConfigOptions(Values.SIMULATOR_CONFIG).parse())
 
     if options.editor:
         config_merge = EditorConfig(options, config)
@@ -97,7 +98,7 @@ def wait():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename=Values.LOGS_PATH+"log.log", format='%(asctime)s - %(levelname)s: %(message)s',
+    logging.basicConfig(filename=Values.LOGS_PATH + "log.log", format='%(asctime)s - %(levelname)s: %(message)s',
                         level=logging.DEBUG)
 
     configuration = configure_application()

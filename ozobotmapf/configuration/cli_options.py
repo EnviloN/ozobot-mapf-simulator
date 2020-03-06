@@ -93,8 +93,8 @@ class CLIOptions:
         """Method validates if the config file command-line parameter contains a path to a valid file."""
         assert_argument(self.args.config_file is not None, "You have to provide a config file.")
         if not os.path.isfile(self.args.config_file):
-            if os.path.isfile(Values.CONFIGS_PATH + self.args.config_file):
-                self.args.config_file = Values.CONFIGS_PATH + self.args.config_file
+            if os.path.isfile(Values.DISPLAY_CONFIGS_PATH + self.args.config_file):
+                self.args.config_file = Values.DISPLAY_CONFIGS_PATH + self.args.config_file
             else:
                 assert_argument(False, "Config file has to be a path to a file "
                                        "or a configuration name from `resources/configs/` folder.")
