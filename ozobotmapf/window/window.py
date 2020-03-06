@@ -4,7 +4,7 @@ import pygame
 from ozobotmapf.utils.constants import Values, Colors
 
 
-class Simulator:
+class Window:
     """Class handles object rendering on the screen and Window state.
 
     Attributes:
@@ -40,7 +40,7 @@ class Simulator:
         """Updates pygame.display.
 
         Returns:
-            Simulator: itself
+            Window: itself
         """
         pygame.display.update()
         return self
@@ -54,7 +54,7 @@ class Simulator:
             ozomap (OzoMap): Map to be drawn
 
         Returns:
-            Simulator: itself
+            Window: itself
         """
         self.__screen.fill(Colors.WHITE)
 
@@ -71,7 +71,7 @@ class Simulator:
             positions (list[Tiles]): Agent's position list during plan execution
 
         Returns:
-            Simulator: itself
+            Window: itself
         """
         half_size = self.config.tile_size / 2
         points = [pos.origin.moved(half_size, half_size) for pos in positions]

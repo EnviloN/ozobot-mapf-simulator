@@ -1,7 +1,7 @@
 import logging
 import math
 
-from ozobotmapf.graphics.point import Point
+from ozobotmapf.graphics.shapes import Point
 
 
 class Configuration:

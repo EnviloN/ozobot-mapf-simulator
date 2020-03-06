@@ -29,7 +29,7 @@ class Point:
         """
         return Point(self.x + x, self.y + y)
 
-    def to_pair(self):
+    def to_list(self):
         """Method returns the point in a pair representation."""
         return self.x, self.y
 
@@ -46,3 +46,31 @@ class Point:
 
     def __len__(self):
         return 2
+
+
+class Rectangle:
+    def __init__(self, origin: Point, width: int, height: int):
+        self.origin = Point(*origin.to_list())
+        self.width = width
+        self.height = height
+
+    def to_list(self):
+        return self.origin, self.width, self.height
+
+    def __str__(self):
+        return "Rectangle [Origin: {}, W: {}, H: {}]".format(self.origin, self.width, self.height)
+
+    def __getitem__(self, item):
+        if item == 0:
+            return self.origin.x
+        elif item == 1:
+            return self.origin.y
+        elif item == 2:
+            return self.width
+        elif item == 3:
+            return self.height
+        else:
+            raise IndexError("Point has only two properties.")
+
+    def __len__(self):
+        return 4

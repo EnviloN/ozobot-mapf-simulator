@@ -8,9 +8,10 @@ import enum
 from pygame.locals import *
 import heapq
 
-from ozobotmapf.graphics.point import Point
-from ozobotmapf.map_editor.EditorException import EditorException
+from ozobotmapf.graphics.drawables import Line, FillRect, Rect, FillChecker
+from ozobotmapf.graphics.shapes import Point, Rectangle
 from ozobotmapf.utils.constants import Colors, Values
+from ozobotmapf.map_editor.EditorException import EditorException
 
 
 class Mode(enum.Enum):
@@ -139,31 +140,18 @@ class Editor:
 
     def __draw_tile(self, tile):
         tile_size = self.config.tile_size
+        rectangle = Rectangle(Point(tile.origin.x, tile.origin.y), tile_size, tile_size)
         if tile.agent_start > 0 and tile.agent_finish > 0:
-            self.__draw_double_color_tile(tile, 10)
+            FillChecker(rectangle, Colors.START, Colors.FINISH).draw(self.__screen)
             self.__render_text_in_tile(tile, "S: {} / F: {}".format(tile.agent_start, tile.agent_finish))
         elif tile.agent_start > 0:
-            self.__screen.fill(Colors.START, [tile.origin.x, tile.origin.y, tile_size, tile_size])
+            FillRect(rectangle, Colors.START).draw(self.__screen)
             self.__render_text_in_tile(tile, "S: {}".format(tile.agent_start))
         elif tile.agent_finish > 0:
-            self.__screen.fill(Colors.FINISH, [tile.origin.x, tile.origin.y, tile_size, tile_size])
+            FillRect(rectangle, Colors.FINISH).draw(self.__screen)
             self.__render_text_in_tile(tile, "F: {}".format(tile.agent_finish))
 
-        pygame.draw.rect(self.__screen, Colors.GREY, [tile.origin.x, tile.origin.y, tile_size, tile_size],
-                         self.config.tile_border_width)
-
-    def __draw_double_color_tile(self, tile, splits):
-        colors = [Colors.START, Colors.FINISH]
-        current_color = 0
-        tile_size = self.config.tile_size
-        part_size = tile_size / splits
-        for part_x in range(splits):
-            for part_y in range(splits):
-                x = tile.origin.x + part_x * part_size
-                y = tile.origin.y + part_y * part_size
-                self.__screen.fill(colors[current_color], [x, y, part_size, part_size])
-                current_color = 1 - current_color
-            current_color = 1 - current_color
+        Rect(rectangle, self.config.tile_border_width, Colors.GREY).draw(self.__screen)
 
     def __render_text_in_tile(self, tile, text):
         text = self.font.render(text, True, Colors.BLACK)
@@ -229,7 +217,7 @@ class Editor:
             start (Point): Start point of the line
             end (Point): End point of the line
         """
-        pygame.draw.line(self.__screen, Colors.BLACK, start, end, self.config.wall_width)
+        Line(start, end, self.config.wall_width).draw(self.__screen)
 
     def __game_loop(self):
         end, save = False, False

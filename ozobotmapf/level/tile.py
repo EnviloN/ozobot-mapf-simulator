@@ -1,4 +1,4 @@
-from ozobotmapf.graphics.point import Point
+from ozobotmapf.graphics.shapes import Point
 
 
 class Tile:

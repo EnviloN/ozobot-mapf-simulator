@@ -2,7 +2,7 @@ import logging
 import re
 import itertools
 
-from ozobotmapf.graphics.point import Point
+from ozobotmapf.graphics.shapes import Point
 from ozobotmapf.level.grid import Grid
 from ozobotmapf.level.ozomap_exception import OzoMapException
 from ozobotmapf.level.tile import Tile

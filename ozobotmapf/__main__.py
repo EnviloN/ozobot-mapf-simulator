@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 import sys
 
-from ozobotmapf.simulator.simulator import Simulator
+from ozobotmapf.window.window import Window
 from ozobotmapf.map_editor.editor import Editor
 from ozobotmapf.configuration.configuration import EditorConfig, SimulatorConfig
 from ozobotmapf.configuration.cli_options import CLIOptions
@@ -25,7 +25,10 @@ def run_simulation(config):
     solver = init_solver(config)
     plans = solver.plan()
 
-    window = Simulator(config)
+    # simulator = Simulator(ozomap, plans, config)
+    # simulator.run()
+
+    window = Window(config)
     window.draw_map(ozomap).update()
 
     wait()
