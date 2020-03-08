@@ -6,6 +6,7 @@ from ozobotmapf.graphics.shapes import Point
 from ozobotmapf.level.grid import Grid
 from ozobotmapf.level.ozomap_exception import OzoMapException
 from ozobotmapf.level.tile import Tile
+from ozobotmapf.utils.constants import Directions
 
 
 class OzoMap:
@@ -39,13 +40,13 @@ class OzoMap:
 
         for tile in self.map_tile_generator():
             if tile.y_pos == 0:
-                tile.build_upper_wall()
+                tile.build_wall(Directions.UP)
             if tile.y_pos == (self.height - 1):
-                tile.build_bottom_wall()
+                tile.build_wall(Directions.DOWN)
             if tile.x_pos == 0:
-                tile.build_left_wall()
+                tile.build_wall(Directions.LEFT)
             if tile.x_pos == (self.width - 1):
-                tile.build_right_wall()
+                tile.build_wall(Directions.RIGHT)
 
         logging.info("Empty Map successfully initialized.")
 
@@ -99,9 +100,9 @@ class OzoMap:
             list[Tiles]: List of tile instances for given agent's positions
         """
         if waiting:
-            return [self.__get_tile_by_id(tile_id) for tile_id in positions]
+            return [self.get_tile_by_id(tile_id) for tile_id in positions]
         else:
-            return [self.__get_tile_by_id(tile_id) for tile_id in [group[0] for group in itertools.groupby(positions)]]
+            return [self.get_tile_by_id(tile_id) for tile_id in [group[0] for group in itertools.groupby(positions)]]
 
     def __validate_attributes(self):
         """Method validates level width, height and agent count."""
@@ -159,20 +160,20 @@ class OzoMap:
 
             if x_from == x_to:
                 if y_from < y_to:
-                    self.grid.get_tile(x_from, y_from).destroy_bottom_wall()
-                    self.grid.get_tile(x_to, y_to).destroy_upper_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_wall(Directions.DOWN)
+                    self.grid.get_tile(x_to, y_to).destroy_wall(Directions.UP)
                 else:
-                    self.grid.get_tile(x_from, y_from).destroy_upper_wall()
-                    self.grid.get_tile(x_to, y_to).destroy_bottom_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_wall(Directions.UP)
+                    self.grid.get_tile(x_to, y_to).destroy_wall(Directions.DOWN)
             elif y_from == y_to:
                 if x_from < x_to:
-                    self.grid.get_tile(x_from, y_from).destroy_right_wall()
-                    self.grid.get_tile(x_to, y_to).destroy_left_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_wall(Directions.RIGHT)
+                    self.grid.get_tile(x_to, y_to).destroy_wall(Directions.LEFT)
                 else:
-                    self.grid.get_tile(x_from, y_from).destroy_left_wall()
-                    self.grid.get_tile(x_to, y_to).destroy_right_wall()
+                    self.grid.get_tile(x_from, y_from).destroy_wall(Directions.LEFT)
+                    self.grid.get_tile(x_to, y_to).destroy_wall(Directions.RIGHT)
 
-    def __get_tile_by_id(self, tile_id):
+    def get_tile_by_id(self, tile_id):
         """Method returns a tile instance with given tile_id
 
         Args:

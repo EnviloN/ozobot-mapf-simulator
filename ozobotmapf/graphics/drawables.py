@@ -2,7 +2,7 @@ import math
 import pygame
 
 from ozobotmapf.graphics.shapes import Point, Rectangle
-from ozobotmapf.utils.constants import Colors
+from ozobotmapf.utils.constants import Colors, Directions
 
 
 class Drawable:
@@ -73,6 +73,27 @@ class FillChecker(Drawable):
                 screen.fill(self.colors[current_color], [x, y, self.part_width, self.part_height])
                 current_color = 1 - current_color
             current_color = 1 - current_color
+
+
+class FullArrow(Drawable):
+    def __init__(self, center, direction, width, color=Colors.BLACK):
+        self.corners = self.__compute_corners(center, direction, width)
+        self.color = color
+
+    def draw(self, screen):
+        pygame.draw.polygon(screen, self.color, self.corners)
+
+    @staticmethod
+    def __compute_corners(center, direction, width):
+        half = width / 2
+        if direction == Directions.UP:
+            return [center.moved(half, half), center.moved(-half, half), center.moved(0, -half)]
+        elif direction == Directions.RIGHT:
+            return [center.moved(-half, half), center.moved(-half, -half), center.moved(half, 0)]
+        elif direction == Directions.DOWN:
+            return [center.moved(-half, -half), center.moved(half, -half), center.moved(0, half)]
+        elif direction == Directions.LEFT:
+            return [center.moved(half, -half), center.moved(half, half), center.moved(-half, 0)]
 
 
 class DrawableGroup(Drawable):

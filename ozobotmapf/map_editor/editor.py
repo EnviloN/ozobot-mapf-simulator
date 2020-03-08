@@ -10,7 +10,7 @@ import heapq
 
 from ozobotmapf.graphics.drawables import Line, FillRect, Rect, FillChecker
 from ozobotmapf.graphics.shapes import Point, Rectangle
-from ozobotmapf.utils.constants import Colors, Values
+from ozobotmapf.utils.constants import Colors, Values, Directions
 from ozobotmapf.map_editor.EditorException import EditorException
 
 
@@ -162,13 +162,13 @@ class Editor:
 
     def __draw_walls(self):
         for tile in self.ozomap.grid.tile_generator():
-            if tile.has_upper_wall():
+            if tile.has_wall(Directions.UP):
                 self.__draw_upper_wall(tile.origin)
-            if tile.has_right_wall():
+            if tile.has_wall(Directions.RIGHT):
                 self.__draw_right_wall(tile.origin)
-            if tile.has_bottom_wall():
+            if tile.has_wall(Directions.DOWN):
                 self.__draw_bottom_wall(tile.origin)
-            if tile.has_left_wall():
+            if tile.has_wall(Directions.LEFT):
                 self.__draw_left_wall(tile.origin)
 
     def __draw_upper_wall(self, tile_origin):
@@ -281,13 +281,13 @@ class Editor:
         xo, yo = tile.origin.x, tile.origin.y
         t, ts = self.click_tolerance, self.config.tile_size
         if (yo-t <= yp <= yo+t) and (xo+t <= xp <= xo+ts-t):
-            tile.toggle_upper_wall()
+            tile.toggle_wall(Directions.UP)
         if (xo+ts-t <= xp <= xo+ts+t) and (yo+t <= yp <= yo+ts-t):
-            tile.toggle_right_wall()
+            tile.toggle_wall(Directions.RIGHT)
         if (yo+ts-t <= yp <= yo+ts+t) and (xo+t <= xp <= xo+ts-t):
-            tile.toggle_bottom_wall()
+            tile.toggle_wall(Directions.DOWN)
         if (xo-t <= xp <= xo+t) and (yo+t <= yp <= yo+ts-t):
-            tile.toggle_left_wall()
+            tile.toggle_wall(Directions.LEFT)
 
     def __handle_tile_toggle(self, pos):
         tile = self.__get_tile_from_position(pos)
@@ -383,9 +383,9 @@ class Editor:
         lines.append("E =\n")
         tile_id = 0
         for tile in self.ozomap.grid.tile_generator():
-                if not tile.has_bottom_wall():
+                if not tile.has_wall(Directions.DOWN):
                     lines.append("{" + "{},{}".format(tile_id, tile_id + self.config.map_width) + "}\n")
-                if not tile.has_right_wall():
+                if not tile.has_wall(Directions.RIGHT):
                     lines.append("{" + "{},{}".format(tile_id, tile_id + 1) + "}\n")
                 tile_id += 1
 

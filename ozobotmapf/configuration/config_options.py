@@ -3,6 +3,8 @@ import os.path
 from configparser import ConfigParser
 
 from ozobotmapf.configuration.config_exceptions import InvalidConfigOptionException
+from ozobotmapf.simulator.agents.dummy_agent import DummyAgent
+from ozobotmapf.simulator.agents.ozobot_agent import OzobotAgent
 from ozobotmapf.utils.constants import AgentTypes
 
 
@@ -114,10 +116,10 @@ class ConfigOptions:
 
         Agent type string is replaced with agent class.
         """
-        if self.config["simulator"]["agent_type"] == "dummy":
-            self.config["simulator"]["agent_type"] = AgentTypes.DUMMY
-        elif self.config["simulator"]["agent_type"] == "ozobot":
-            self.config["simulator"]["agent_type"] = AgentTypes.OZOBOT
+        if self.config["simulator"]["agent_type"] == AgentTypes.DUMMY:
+            self.config["simulator"]["agent_type"] = DummyAgent
+        elif self.config["simulator"]["agent_type"] == AgentTypes.OZOBOT:
+            self.config["simulator"]["agent_type"] = OzobotAgent
         else:
             raise_exception("Unsupported agent type found in configuration.")
 

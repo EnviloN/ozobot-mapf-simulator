@@ -21,7 +21,7 @@ class Simulator:
     def __init_agents(self):
         agents = []
         for agent_id in self.plans:
-            agents.append(self.config.agent_class(agent_id, self.plans[agent_id], self.ozomap))
+            agents.append(self.config.agent_class(agent_id, self.plans[agent_id], self.ozomap, self.config))
 
         return agents
 

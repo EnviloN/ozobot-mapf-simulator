@@ -1,4 +1,6 @@
 from ozobotmapf.graphics.shapes import Point
+from ozobotmapf.level.ozomap_exception import OzoMapException
+from ozobotmapf.utils.constants import Directions
 
 
 class Tile:
@@ -30,74 +32,36 @@ class Tile:
         """Returns true if there is an agent's finish on the tile."""
         return True if self.agent_finish > 0 else False
 
-    def has_upper_wall(self):
+    def has_wall(self, direction):
         """Getter for upper wall."""
-        return self.__walls[0] is True
-
-    def has_right_wall(self):
-        """Getter for right wall."""
-        return self.__walls[1] is True
-
-    def has_bottom_wall(self):
-        """Getter for bottom wall."""
-        return self.__walls[2] is True
-
-    def has_left_wall(self):
-        """Getter for left wall."""
-        return self.__walls[3] is True
+        return self.__walls[direction]
 
     def build_all_walls(self):
         """Sets all walls to True."""
         self.__walls = [True] * 4
 
-    def build_upper_wall(self):
+    def build_wall(self, direction):
         """Sets upper wall to True."""
-        self.__walls[0] = True
-
-    def build_right_wall(self):
-        """Sets right wall to True."""
-        self.__walls[1] = True
-
-    def build_bottom_wall(self):
-        """Sets bottom wall to True."""
-        self.__walls[2] = True
-
-    def build_left_wall(self):
-        """Sets left wall to True."""
-        self.__walls[3] = True
+        self.__walls[direction] = True
 
     def destroy_all_walls(self):
         """Sets all walls to False."""
         self.__walls = [False] * 4
 
-    def destroy_upper_wall(self):
+    def destroy_wall(self, direction):
         """Sets upper wall to False."""
-        self.__walls[0] = False
+        self.__walls[direction] = False
 
-    def destroy_right_wall(self):
-        """Sets right wall to False."""
-        self.__walls[1] = False
-
-    def destroy_bottom_wall(self):
-        """Sets bottom wall to False."""
-        self.__walls[2] = False
-
-    def destroy_left_wall(self):
-        """Sets left wall to False."""
-        self.__walls[3] = False
-
-    def toggle_upper_wall(self):
+    def toggle_wall(self, direction):
         """Sets upper wall to the opposite value."""
-        self.__walls[0] = not self.__walls[0]
+        self.__walls[direction] = not self.__walls[direction]
 
-    def toggle_right_wall(self):
-        """Sets right wall to the opposite value."""
-        self.__walls[1] = not self.__walls[1]
-
-    def toggle_bottom_wall(self):
-        """Sets bottom wall to the opposite value."""
-        self.__walls[2] = not self.__walls[2]
-
-    def toggle_left_wall(self):
-        """Sets left wall to the opposite value."""
-        self.__walls[3] = not self.__walls[3]
+    def direction_to(self, other):
+        x, y = self.origin.to_list()
+        x_other, y_other = other.origin.to_list()
+        if x != x_other and y != y_other:
+            raise OzoMapException("Diagonal directions are not supported.")
+        elif x == x_other:
+            return Directions.DOWN if y - y_other < 0 else Directions.UP
+        elif y == y_other:
+            return Directions.RIGHT if x - x_other < 0 else Directions.LEFT

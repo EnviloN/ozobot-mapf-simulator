@@ -1,6 +1,6 @@
 from ozobotmapf.graphics.drawables import DrawableGroup, FillChecker, FillRect, Line
 from ozobotmapf.graphics.shapes import Rectangle, Point
-from ozobotmapf.utils.constants import Colors
+from ozobotmapf.utils.constants import Colors, Directions
 
 
 class OzomapDrawableParser:
@@ -48,13 +48,13 @@ class OzomapDrawableParser:
     def __walls_to_drawable(self):
         wall_set = set()
         for tile in self.ozomap.map_tile_generator():
-            if tile.has_upper_wall():
+            if tile.has_wall(Directions.UP):
                 wall_set.add(self.__upper_wall_to_drawable(tile.origin))
-            if tile.has_right_wall():
+            if tile.has_wall(Directions.RIGHT):
                 wall_set.add(self.__right_wall_to_drawable(tile.origin))
-            if tile.has_bottom_wall():
+            if tile.has_wall(Directions.DOWN):
                 wall_set.add(self.__bottom_wall_to_drawable(tile.origin))
-            if tile.has_left_wall():
+            if tile.has_wall(Directions.LEFT):
                 wall_set.add(self.__left_wall_to_drawable(tile.origin))
         group = DrawableGroup()
         for wall in wall_set:
