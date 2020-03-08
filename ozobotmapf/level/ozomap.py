@@ -85,8 +85,8 @@ class OzoMap:
 
     def map_tile_generator(self):
         """Map tile generator that yields all map tiles."""
-        for x in range(self.width):
-            for y in range(self.height):
+        for y in range(self.height):
+            for x in range(self.width):
                 yield self.grid.get_tile(x, y)
 
     def get_tiles_from_agent_positions(self, positions, waiting=True):
