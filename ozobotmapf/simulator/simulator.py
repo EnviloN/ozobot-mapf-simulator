@@ -4,6 +4,7 @@ import sys
 import pygame
 
 from ozobotmapf.graphics.ozomap_drawable import OzomapDrawableParser
+from ozobotmapf.simulator.timer import Timer
 from ozobotmapf.utils.constants import Colors, Values
 
 
@@ -12,6 +13,8 @@ class Simulator:
         self.ozomap = ozomap
         self.plans = plans
         self.config = config
+
+        self.timer = Timer()
 
         self.map_objects = OzomapDrawableParser(ozomap, config).parse()
         self.agents = self.__init_agents()
@@ -47,18 +50,23 @@ class Simulator:
         self.__init_screen()
 
         self.__preview_map()
-        self.wait_for_user()
+        self.__wait_for_user()
 
-        self.__update_agents()
-        self.__draw_active_paths().__update()
+        self.timer.start(self.__get_longest_path_time())
 
-        self.wait_for_user()
+        while not self.timer.is_finished():
+            self.__handle_events()
+            time = self.timer.get_time()
+            self.__update_agents(time)
+            self.__draw_map().__draw_active_paths().__update()
+
+        self.__wait_for_user()
 
         pygame.quit()
         logging.info("Successfully finished the Simulator process.")
 
     @staticmethod
-    def wait_for_user():
+    def __wait_for_user():
         while True:
             for event in pygame.event.get():
                 if (event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -67,6 +75,14 @@ class Simulator:
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
                     return
+
+    @staticmethod
+    def __handle_events():
+        for event in pygame.event.get():
+            if (event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                logging.info("Quitting application.")
+                pygame.quit()
+                sys.exit()
 
     def __draw_map(self, preview=False):
         self.__screen.fill(Colors.WHITE)
@@ -104,11 +120,20 @@ class Simulator:
 
         self.__update()
 
-    def __update_agents(self):
+    def __update_agents(self, time):
         for agent in self.agents:
-            agent.update_path()
+            agent.update_path(time)
+        return self
 
     def __draw_active_paths(self):
         for agent in self.agents:
             agent.get_active_path().draw(self.__screen)
         return self
+
+    def __get_longest_path_time(self):
+        max_len = 0
+        for agent in self.agents:
+            p_len = len(agent.positions)
+            if p_len > max_len:
+                max_len = p_len
+        return max_len * self.config.step_time

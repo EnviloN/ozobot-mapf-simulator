@@ -16,7 +16,7 @@ class Agent:
         self.active_path = DrawableGroup()
         self.direction_arrow = self.__create_direction_arrow()
 
-    def update_path(self):
+    def update_path(self, time):
         pass
 
     def get_active_path(self):
@@ -40,18 +40,6 @@ class Agent:
         for step in self.steps:
             if step is not None:
                 direction = step[0].direction_to(step[1])
-                position = self.__get_direction_arrow_position(step[0], direction)
+                position = step[0].get_edge_middle(direction)
                 return FullArrow(position, direction, self.config.wall_width)
         return None
-
-    def __get_direction_arrow_position(self, tile, direction):
-        size = self.config.tile_size
-        half = size / 2
-        if direction == Directions.UP:
-            return tile.origin.moved(half, 0)
-        elif direction == Directions.RIGHT:
-            return tile.origin.moved(size, half)
-        elif direction == Directions.DOWN:
-            return tile.origin.moved(half, size)
-        elif direction == Directions.LEFT:
-            return tile.origin.moved(0, half)

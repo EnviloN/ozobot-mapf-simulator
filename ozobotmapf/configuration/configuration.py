@@ -70,6 +70,8 @@ class Configuration:
         self.display_walls = None
         self.agent_class = None
         self.direction_preview = None
+        self.step_time = None
+        self.tail_length = None
 
     def __str__(self):
         return "CONFIGURATION PARAMETERS:\n" \
@@ -117,6 +119,8 @@ class SimulatorConfig(Configuration):
         self.display_walls = config["simulator"]["display_walls"]
         self.direction_preview = config["simulator"]["direction_preview"]
         self.agent_class = config["simulator"]["agent_type"]
+        self.step_time = config["simulator"]["step_time"]
+        self.tail_length = math.floor(config["simulator"]["tail_length"] * self.mm_to_px)
 
         logging.debug(str(self))
 

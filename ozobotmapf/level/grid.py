@@ -12,7 +12,7 @@ class Grid:
         for col in range(len(self.__tiles[0])):
             for row in range(len(self.__tiles)):
                 tile_origin = self.__origin.moved(col * self.__tile_size, row * self.__tile_size)
-                self.__tiles[row][col] = Tile(tile_origin, col, row)
+                self.__tiles[row][col] = Tile(tile_origin, col, row, config.tile_size)
 
     def get_tile(self, x, y):
         return self.__tiles[y][x]
