@@ -15,7 +15,6 @@ class Simulator:
 
         self.agents = []
         self.map_objects = OzomapDrawableParser(ozomap, config).parse()
-        self.preview = True
 
         self.__pygame_init()
 
@@ -39,35 +38,41 @@ class Simulator:
     def run(self):
         logging.info("Starting the Simulator process.")
         self.__init_screen()
-        self.__draw_map()
 
-        self.wait()
+        self.__preview_map()
+        self.wait_for_user()
+
         pygame.quit()
         logging.info("Successfully finished the Simulator process.")
 
-    def wait(self):
-        # TODO: Delete me when I'm not needed anymore.
+    @staticmethod
+    def wait_for_user():
         while True:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if (event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     logging.info("Quitting application.")
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.KEYDOWN:  # and event.key == K_ESCAPE:
+                if event.type == pygame.KEYDOWN:
                     return
 
-    def __draw_map(self):
+    def __draw_map(self, preview=False):
         self.__screen.fill(Colors.WHITE)
 
-        if self.preview:
-            self.map_objects[0].draw(self.__screen)
+        if preview:
+            self.map_objects[0].draw(self.__screen)  # Agent Starts/Ends
 
         if self.config.display_grid:
-            self.map_objects[1].draw(self.__screen)
+            self.map_objects[1].draw(self.__screen)  # Grid border lines
 
-        self.map_objects[2].draw(self.__screen)
-        self.__update()
+        if self.config.display_walls:
+            self.map_objects[2].draw(self.__screen)  # Walls
+
+        return self
 
     def __update(self):
         pygame.display.update()
         return self
+
+    def __preview_map(self):
+        self.__draw_map(True).__update()

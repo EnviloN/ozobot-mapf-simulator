@@ -67,6 +67,7 @@ class Configuration:
         self.editor = cli.editor
 
         self.display_grid = None
+        self.display_walls = None
 
     def __str__(self):
         return "CONFIGURATION PARAMETERS:\n" \
@@ -111,6 +112,7 @@ class SimulatorConfig(Configuration):
         self.map_width, self.map_height, self.map_agent_count = cli.map_attributes
 
         self.display_grid = config["simulator"]["display_borders"]
+        self.display_walls = config["simulator"]["display_walls"]
 
         logging.debug(str(self))
 

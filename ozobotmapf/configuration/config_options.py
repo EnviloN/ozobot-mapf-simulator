@@ -58,7 +58,7 @@ class ConfigOptions:
         options = {}
         for option in self.__raw_config.options(section):
             if section == "simulator":
-                if option == "display_borders":
+                if option == "display_borders" or option == "display_walls":
                     options[option] = self.__raw_config.getboolean(section, option)
             elif section == "ozobot":
                 options[option] = self.__raw_config.getfloat(section, option)
