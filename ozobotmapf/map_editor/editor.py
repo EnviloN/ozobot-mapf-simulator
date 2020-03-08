@@ -377,17 +377,17 @@ class Editor:
     def __save_to_file(self, name):
         lines = ["V =\n"]
         tile_id = 0
-        for tile in self.ozomap.grid.tile_generator():
+        for tile in self.ozomap.map_tile_generator():
             lines.append("({},{},{})\n".format(tile_id, tile.agent_start, tile.agent_finish))
             tile_id += 1
         lines.append("E =\n")
         tile_id = 0
-        for tile in self.ozomap.grid.tile_generator():
-                if not tile.has_wall(Directions.DOWN):
-                    lines.append("{" + "{},{}".format(tile_id, tile_id + self.config.map_width) + "}\n")
-                if not tile.has_wall(Directions.RIGHT):
-                    lines.append("{" + "{},{}".format(tile_id, tile_id + 1) + "}\n")
-                tile_id += 1
+        for tile in self.ozomap.map_tile_generator():
+            if not tile.has_wall(Directions.DOWN):
+                lines.append("{" + "{},{}".format(tile_id, tile_id + self.config.map_width) + "}\n")
+            if not tile.has_wall(Directions.RIGHT):
+                lines.append("{" + "{},{}".format(tile_id, tile_id + 1) + "}\n")
+            tile_id += 1
 
         with open(Values.MAPS_PATH + name + Values.MAP_FILE_EXT, "w") as file:
             file.writelines(lines)

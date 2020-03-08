@@ -1,5 +1,5 @@
 from ozobotmapf.utils.constants import Directions
-from ozobotmapf.graphics.drawables import FullArrow
+from ozobotmapf.graphics.drawables import FullArrow, DrawableGroup
 
 
 class Agent:
@@ -13,10 +13,10 @@ class Agent:
         self.positions = self.__tiles_from_positions()
         self.steps = self.__tiles_from_steps()
 
-        self.active_path = set()
+        self.active_path = DrawableGroup()
         self.direction_arrow = self.__create_direction_arrow()
 
-    def update(self):
+    def update_path(self):
         pass
 
     def get_active_path(self):

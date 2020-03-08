@@ -49,6 +49,11 @@ class Simulator:
         self.__preview_map()
         self.wait_for_user()
 
+        self.__update_agents()
+        self.__draw_active_paths().__update()
+
+        self.wait_for_user()
+
         pygame.quit()
         logging.info("Successfully finished the Simulator process.")
 
@@ -98,3 +103,12 @@ class Simulator:
                     agent.direction_arrow.draw(self.__screen)
 
         self.__update()
+
+    def __update_agents(self):
+        for agent in self.agents:
+            agent.update_path()
+
+    def __draw_active_paths(self):
+        for agent in self.agents:
+            agent.get_active_path().draw(self.__screen)
+        return self

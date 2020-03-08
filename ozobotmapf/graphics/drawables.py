@@ -106,3 +106,6 @@ class DrawableGroup(Drawable):
 
     def add_drawable(self, drawable):
         self.list.append(drawable)
+
+    def clear(self):
+        self.list.clear()
