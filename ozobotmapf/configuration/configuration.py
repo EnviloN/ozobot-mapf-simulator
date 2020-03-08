@@ -68,6 +68,8 @@ class Configuration:
 
         self.display_grid = None
         self.display_walls = None
+        self.agent_class = None
+        self.direction_preview = None
 
     def __str__(self):
         return "CONFIGURATION PARAMETERS:\n" \
@@ -113,6 +115,8 @@ class SimulatorConfig(Configuration):
 
         self.display_grid = config["simulator"]["display_borders"]
         self.display_walls = config["simulator"]["display_walls"]
+        self.direction_preview = config["simulator"]["direction_preview"]
+        self.agent_class = config["simulator"]["agent_type"]
 
         logging.debug(str(self))
 

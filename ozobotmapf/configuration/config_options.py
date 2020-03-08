@@ -3,6 +3,7 @@ import os.path
 from configparser import ConfigParser
 
 from ozobotmapf.configuration.config_exceptions import InvalidConfigOptionException
+from ozobotmapf.utils.constants import AgentTypes
 
 
 class ConfigOptions:
@@ -56,10 +57,13 @@ class ConfigOptions:
             dict[str, str]: Parsed configuration file section
         """
         options = {}
+        simulator_flags = ["display_borders", "display_walls", "direction_preview"]
         for option in self.__raw_config.options(section):
             if section == "simulator":
-                if option == "display_borders" or option == "display_walls":
+                if option in simulator_flags:
                     options[option] = self.__raw_config.getboolean(section, option)
+                else:
+                    options[option] = self.__raw_config.get(section, option)
             elif section == "ozobot":
                 options[option] = self.__raw_config.getfloat(section, option)
             else:
@@ -76,7 +80,7 @@ class ConfigOptions:
             if section == "solver":
                 self.__validate_solver_section()
             elif section == "simulator":
-                pass
+                self.__validate_simulator_section()
             else:
                 self.__validate_section(section)
 
@@ -105,6 +109,17 @@ class ConfigOptions:
         if not os.path.isdir(self.config['solver']['path']):
             raise_exception("'path' option in 'solver' section must be a valid path to a directory.")
 
+    def __validate_simulator_section(self):
+        """Validates simulator section values.
+
+        Agent type string is replaced with agent class.
+        """
+        if self.config["simulator"]["agent_type"] == "dummy":
+            self.config["simulator"]["agent_type"] = AgentTypes.DUMMY
+        elif self.config["simulator"]["agent_type"] == "ozobot":
+            self.config["simulator"]["agent_type"] = AgentTypes.OZOBOT
+        else:
+            raise_exception("Unsupported agent type found in configuration.")
 
 # ------------------------------------------------------------------------------------------------------------
 

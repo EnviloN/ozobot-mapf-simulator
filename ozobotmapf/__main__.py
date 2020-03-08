@@ -29,18 +29,6 @@ def run_simulation(config):
     simulator = Simulator(ozomap, plans, config)
     simulator.run()
 
-    # window = Window(config)
-    # window.draw_map(ozomap).update()
-    #
-    # wait()
-    #
-    # for agent_id in plans:
-    #     window.draw_full_path(
-    #         ozomap.get_tiles_from_agent_positions(plans[agent_id]['pos_list'], False))
-    # window.update()
-    #
-    # wait()
-
     logging.info("The Simulator finished successfully.")
 
 

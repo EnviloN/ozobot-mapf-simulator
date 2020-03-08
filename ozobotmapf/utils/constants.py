@@ -1,5 +1,8 @@
 import pygame
 
+from ozobotmapf.simulator.agents.dummy_agent import DummyAgent
+from ozobotmapf.simulator.agents.ozobot_agent import OzobotAgent
+
 
 class Colors:
     """Class contains color constants for easier use.
@@ -25,3 +28,8 @@ class Values:
     SIMULATOR_CONFIG = "../resources/config/simulator.ini"
 
     MAP_FILE_EXT = ".ozomap"
+
+
+class AgentTypes:
+    DUMMY = DummyAgent
+    OZOBOT = OzobotAgent

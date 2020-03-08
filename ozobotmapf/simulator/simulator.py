@@ -13,10 +13,17 @@ class Simulator:
         self.plans = plans
         self.config = config
 
-        self.agents = []
         self.map_objects = OzomapDrawableParser(ozomap, config).parse()
+        self.agents = self.__init_agents()
 
         self.__pygame_init()
+
+    def __init_agents(self):
+        agents = []
+        for agent_id in self.plans:
+            agents.append(self.config.agent_class(agent_id, self.plans[agent_id], self.ozomap))
+
+        return agents
 
     def __pygame_init(self):
         logging.info("Initializing pygame.")
@@ -70,9 +77,24 @@ class Simulator:
 
         return self
 
+    def __draw_all_paths(self):
+        for agent in self.agents:
+            self.__draw_agent_path(agent)
+
+    def __draw_agent_path(self, agent):
+        for drawable in agent.get_active_path():
+            drawable.draw(self.__screen)
+
     def __update(self):
         pygame.display.update()
         return self
 
     def __preview_map(self):
-        self.__draw_map(True).__update()
+        self.__draw_map(True)
+
+        if self.config.direction_preview:
+            for agent in self.agents:
+                if agent.direction_arrow is not None:
+                    agent.direction_arrow.draw(self.__screen)
+
+        self.__update()
