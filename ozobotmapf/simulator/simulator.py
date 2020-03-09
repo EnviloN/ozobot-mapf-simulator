@@ -15,6 +15,7 @@ class Simulator:
         self.config = config
 
         self.timer = Timer()
+        # self.timer = Timer(True)  # Debug mode timer
 
         self.map_objects = OzomapDrawableParser(ozomap, config).parse()
         self.agents = self.__init_agents()
@@ -87,8 +88,8 @@ class Simulator:
     def __draw_map(self, preview=False):
         self.__screen.fill(Colors.WHITE)
 
-        if preview:
-            self.map_objects[0].draw(self.__screen)  # Agent Starts/Ends
+        # if preview:
+        self.map_objects[0].draw(self.__screen)  # Agent Starts/Ends
 
         if self.config.display_grid:
             self.map_objects[1].draw(self.__screen)  # Grid border lines

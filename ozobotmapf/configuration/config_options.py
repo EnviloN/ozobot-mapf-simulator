@@ -66,7 +66,7 @@ class ConfigOptions:
                     options[option] = self.__raw_config.getboolean(section, option)
                 elif option == "step_time":
                     options[option] = self.__raw_config.getint(section, option)
-                elif option == "tail_length":
+                elif option == "tail_lag":
                     options[option] = self.__raw_config.getfloat(section, option)
                 else:
                     options[option] = self.__raw_config.get(section, option)

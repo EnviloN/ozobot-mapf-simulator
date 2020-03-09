@@ -29,6 +29,11 @@ class Point:
         """
         return Point(self.x + x, self.y + y)
 
+    def offset_to(self, other, offset):
+        x_off = (other.x - self.x) * offset
+        y_off = (other.y - self.y) * offset
+        return self.moved(x_off, y_off)
+
     def to_list(self):
         """Method returns the point in a pair representation."""
         return self.x, self.y
