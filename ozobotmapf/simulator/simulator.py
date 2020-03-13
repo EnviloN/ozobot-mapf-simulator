@@ -137,4 +137,4 @@ class Simulator:
             p_len = len(agent.positions)
             if p_len > max_len:
                 max_len = p_len
-        return max_len * self.config.step_time
+        return (max_len * self.config.step_time) + self.config.tail_lag

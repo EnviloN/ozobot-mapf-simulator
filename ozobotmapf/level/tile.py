@@ -63,7 +63,7 @@ class Tile:
         if x != x_other and y != y_other:
             raise OzoMapException("Diagonal directions are not supported.")
         elif x == x_other and y == y_other:
-            return None
+            return Directions.NONE
         elif x == x_other:
             return Directions.DOWN if y - y_other < 0 else Directions.UP
         elif y == y_other:
@@ -75,7 +75,9 @@ class Tile:
 
     def get_edge_middle(self, direction):
         half_size = round(self.__size / 2)
-        if direction == Directions.UP:
+        if direction == Directions.NONE:
+            return self.get_middle()
+        elif direction == Directions.UP:
             return self.origin.moved(half_size, 0)
         elif direction == Directions.RIGHT:
             return self.origin.moved(self.__size, half_size)

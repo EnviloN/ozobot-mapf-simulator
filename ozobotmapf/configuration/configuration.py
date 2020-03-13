@@ -72,6 +72,7 @@ class Configuration:
         self.direction_preview = None
         self.step_time = None
         self.tail_lag = None
+        self.curves = None
 
     def __str__(self):
         return "CONFIGURATION PARAMETERS:\n" \
@@ -121,6 +122,7 @@ class SimulatorConfig(Configuration):
         self.agent_class = config["simulator"]["agent_type"]
         self.step_time = config["simulator"]["step_time"]
         self.tail_lag = math.floor(config["simulator"]["tail_lag"] * self.mm_to_px)
+        self.curves = config["simulator"]["curves"]
 
         logging.debug(str(self))
 

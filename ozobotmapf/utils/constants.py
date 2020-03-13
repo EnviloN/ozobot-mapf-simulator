@@ -29,6 +29,7 @@ class Values:
 
 class Directions:
     """Class contains possible directions."""
+    NONE = -1
     UP = 0
     RIGHT = 1
     DOWN = 2

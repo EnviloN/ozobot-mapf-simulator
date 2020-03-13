@@ -59,7 +59,7 @@ class ConfigOptions:
             dict[str, str]: Parsed configuration file section
         """
         options = {}
-        simulator_flags = ["display_borders", "display_walls", "direction_preview"]
+        simulator_flags = ["display_borders", "display_walls", "direction_preview", "curves"]
         for option in self.__raw_config.options(section):
             if section == "simulator":
                 if option in simulator_flags:

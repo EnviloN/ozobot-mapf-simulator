@@ -1,9 +1,13 @@
-from ozobotmapf.utils.constants import Directions
+import logging
+
 from ozobotmapf.graphics.drawables import FullArrow, DrawableGroup
 
 
 class Agent:
     def __init__(self, agent_id, raw_plans, ozomap, config):
+        logging.info("Initializing agent {}.".format(agent_id))
+        logging.debug("Agent {} plan: {}".format(agent_id, raw_plans))
+
         self.id = agent_id
         self.ozomap = ozomap
         self.config = config
