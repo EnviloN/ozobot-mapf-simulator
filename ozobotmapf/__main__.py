@@ -1,7 +1,4 @@
 import logging
-import pygame
-from pygame.locals import *
-import sys
 
 from ozobotmapf.simulator.simulator import Simulator
 from ozobotmapf.map_editor.editor import Editor
@@ -66,22 +63,11 @@ def configure_application():
 
 def init_solver(config):
     """Function initializes the solver instance with given arguments."""
-    solver_args = {"input-file": config.map_path, "algorithm": "cbs++"}
+    # cbs, cbs+, cbs++, smtcbs, smtcbs+, smtcbs++
+    solver_args = {"input-file": config.map_path, "algorithm": "smtcbs++"}
     solver = MapfSolverBoOX(config.solver_path + "mapf_solver_boOX", solver_args)
     logging.info("Solver initialized.")
     return solver
-
-
-def wait():
-    # TODO: Delete me when I'm not needed anymore.
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                logging.info("Quitting application.")
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN:  # and event.key == K_ESCAPE:
-                return
 
 
 if __name__ == '__main__':

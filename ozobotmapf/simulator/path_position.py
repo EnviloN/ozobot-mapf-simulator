@@ -1,6 +1,3 @@
-from ozobotmapf.utils.constants import Directions
-
-
 class PathPosition:
     def __init__(self, time, max_time):
         if time < 0:

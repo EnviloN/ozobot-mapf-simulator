@@ -1,6 +1,3 @@
-import logging
-import pygame
-
 from ozobotmapf.graphics.drawables import Line
 from ozobotmapf.simulator.agents.agent import Agent
 from ozobotmapf.simulator.path_position import PathPosition
