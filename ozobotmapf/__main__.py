@@ -66,7 +66,7 @@ def configure_application():
 
 def init_solver(config):
     """Function initializes the solver instance with given arguments."""
-    solver_args = {"input-file": config.map_path, "algorithm": "smtcbs++"}
+    solver_args = {"input-file": config.map_path, "algorithm": "cbs++"}
     solver = MapfSolverBoOX(config.solver_path + "mapf_solver_boOX", solver_args)
     logging.info("Solver initialized.")
     return solver

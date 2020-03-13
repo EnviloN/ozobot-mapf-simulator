@@ -1,3 +1,6 @@
+from ozobotmapf.utils.constants import Directions
+
+
 class PathPosition:
     def __init__(self, time, max_time):
         if time < 0:
@@ -32,3 +35,13 @@ class PathPosition:
         else:
             self.offset = (self.time - middle) / (leave - middle)
             self.is_first_half = False
+
+    def get_point_from_position(self):
+        if self.is_first_half:
+            enter, middle = self.curr_t.get_edge_middle(self.from_direction), self.curr_t.get_middle()
+            position = enter.offset_to(middle, self.offset)
+        else:
+            middle, leave = self.curr_t.get_middle(), self.curr_t.get_edge_middle(self.to_direction)
+            position = middle.offset_to(leave, self.offset)
+
+        return position
