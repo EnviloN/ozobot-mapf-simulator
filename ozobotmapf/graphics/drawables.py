@@ -2,6 +2,7 @@ import math
 import pygame
 
 from ozobotmapf.graphics.shapes import Point, Rectangle
+from ozobotmapf.utils import Utils
 from ozobotmapf.utils.constants import Colors, Directions
 
 
@@ -94,6 +95,18 @@ class FullArrow(Drawable):
             return [center.moved(-half, -half), center.moved(half, -half), center.moved(0, half)]
         elif direction == Directions.LEFT:
             return [center.moved(half, -half), center.moved(half, half), center.moved(-half, 0)]
+
+
+class Arc(Drawable):
+    def __init__(self, bounding_box, start_angle, end_angle, width=1, color=Colors.BLACK):
+        self.bounding_box = bounding_box
+        self.starting_angle = Utils.deg_to_rad(start_angle)
+        self.end_angle = Utils.deg_to_rad(end_angle)
+        self.width = width
+        self.color = color
+
+    def draw(self, screen):
+        pygame.draw.arc(screen, self.color, self.bounding_box, self.starting_angle, self.end_angle, self.width)
 
 
 class DrawableGroup(Drawable):
