@@ -121,7 +121,7 @@ class SimulatorConfig(Configuration):
         self.direction_preview = config["simulator"]["direction_preview"]
         self.agent_class = config["simulator"]["agent_type"]
         self.step_time = config["simulator"]["step_time"]
-        self.tail_lag = math.floor(config["simulator"]["tail_lag"] * self.mm_to_px)
+        self.tail_lag = config["simulator"]["tail_lag"]
         self.curves = config["simulator"]["curves"]
 
         logging.debug(str(self))
