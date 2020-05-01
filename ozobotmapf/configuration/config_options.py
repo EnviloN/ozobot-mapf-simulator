@@ -4,6 +4,7 @@ from configparser import ConfigParser
 
 from ozobotmapf.configuration.config_exceptions import InvalidConfigOptionException
 from ozobotmapf.simulator.agents.dummy_agent import DummyAgent
+from ozobotmapf.simulator.agents.animated_agent import AnimatedAgent
 from ozobotmapf.simulator.agents.ozobot_agent import OzobotAgent
 from ozobotmapf.utils.constants import AgentTypes
 
@@ -122,6 +123,8 @@ class ConfigOptions:
         """
         if self.config["simulator"]["agent_type"] == AgentTypes.DUMMY:
             self.config["simulator"]["agent_type"] = DummyAgent
+        elif self.config["simulator"]["agent_type"] == AgentTypes.ANIMATED:
+            self.config["simulator"]["agent_type"] = AnimatedAgent
         elif self.config["simulator"]["agent_type"] == AgentTypes.OZOBOT:
             self.config["simulator"]["agent_type"] = OzobotAgent
         else:

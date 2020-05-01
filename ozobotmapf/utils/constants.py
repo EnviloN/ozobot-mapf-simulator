@@ -39,4 +39,5 @@ class Directions:
 class AgentTypes:
     """Class contains supported agent types (classes)."""
     DUMMY = "dummy"
+    ANIMATED = "animated"
     OZOBOT = "ozobot"
