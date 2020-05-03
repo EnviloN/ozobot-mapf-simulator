@@ -66,7 +66,7 @@ def init_solver(config):
     # MAPF Algorithms: cbs, cbs+, cbs++, smtcbs, smtcbs+, smtcbs++
     solver_args = {"input-file": config.map_path, "algorithm": "smtcbs++"}
     solvers=["mapf_solver_boOX", "rota_solver_boOX"]
-    solver = MapfSolverBoOX(config.solver_path + solvers[1], solver_args)
+    solver = MapfSolverBoOX(config.solver_path + solvers[0], solver_args)
     logging.info("Solver initialized.")
     return solver
 

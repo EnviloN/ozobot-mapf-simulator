@@ -2,6 +2,8 @@ import logging
 
 from ozobotmapf.graphics.drawables import FullArrow, DrawableGroup, Line
 from ozobotmapf.simulator.path_position import PathPosition
+from ozobotmapf.simulator.position_tile import PositionTile
+from ozobotmapf.utils.constants import Directions, PositionTypes
 
 
 class Agent:
@@ -15,10 +17,13 @@ class Agent:
 
         self.raw_positions = raw_plans['pos_list']
         self.raw_steps = raw_plans['steps']
+
+        self.__trim_positions()
+        self.plan_length = len(self.raw_positions) - 1
+        self.max_time = self.__get_max_time()
+
         self.positions = self.__tiles_from_positions()
         self.steps = self.__tiles_from_steps()
-
-        self.max_time = self.__get_max_time()
 
         self.active_path = DrawableGroup()
         self.direction_arrow = self.__create_direction_arrow()
@@ -30,7 +35,43 @@ class Agent:
         return self.active_path
 
     def __tiles_from_positions(self):
-        return [self.ozomap.get_tile_by_id(tile_id) for tile_id in self.raw_positions]
+        tiles = [self.ozomap.get_tile_by_id(raw_id) for raw_id in self.raw_positions]
+        positions = []
+        for i in range(len(tiles)):
+            current_tile = tiles[i]
+            previous_tile = tiles[i-1] if i != 0 else tiles[i]
+            next_tile = tiles[i+1] if i != len(tiles) - 1 else tiles[i]
+
+            from_direction = current_tile.direction_to(previous_tile)
+            to_direction = current_tile.direction_to(next_tile)
+
+            position = PositionTile(current_tile, from_direction, to_direction)
+            if i != 0 and i != len(tiles) - 1:
+                previous_direction = self.__direction_look_back(tiles, i)
+                next_direction = self.__direction_look_ahead(tiles, i)
+                position.set_movement_directions(previous_direction, next_direction)
+
+            positions.append(position)
+
+        return positions
+
+    @staticmethod
+    def __direction_look_back(tiles, index):
+        direction = Directions.NONE
+        tile = tiles[index]
+        while direction == Directions.NONE and index >= 0:
+            direction = tile.direction_to(tiles[index])
+            index -= 1
+        return direction
+
+    @staticmethod
+    def __direction_look_ahead(tiles, index):
+        direction = Directions.NONE
+        tile = tiles[index]
+        while direction == Directions.NONE and index <= len(tiles) - 1:
+            direction = tile.direction_to(tiles[index])
+            index += 1
+        return direction
 
     def __tiles_from_steps(self):
         steps = []
@@ -117,10 +158,14 @@ class Agent:
         return previous_tile, current_tile, next_tile
 
     def __get_max_time(self):
-        tmp_arr = [step for step in self.steps if step]
+        """Method computes the time until the last step."""
+        return self.config.step_time * self.plan_length
+
+    def __trim_positions(self):
+        tmp_arr = [step for step in self.raw_steps if step]
         last_step = tmp_arr[-1]
-        real_len = len(self.steps) - self.steps[::-1].index(last_step)
-        return self.config.step_time * real_len
+        real_len = len(self.raw_steps) - self.raw_steps[::-1].index(last_step) + 1
+        self.raw_positions = self.raw_positions[:real_len]
 
     def _add_path_line(self, p_from, p_to):
         self.active_path.add_drawable(

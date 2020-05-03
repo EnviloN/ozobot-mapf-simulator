@@ -36,6 +36,13 @@ class Directions:
     LEFT = 3
 
 
+class PositionTypes:
+    """Class contains possible types of positions in agent path."""
+    START = 0
+    PASS = 1
+    WAIT = 2
+    STOP = 3
+
 class AgentTypes:
     """Class contains supported agent types (classes)."""
     DUMMY = "dummy"
