@@ -52,7 +52,7 @@ class OzobotAgent(Agent):
                             pos.time, self.config.tail_lag, self.config.colors)
                         )
             else:
-                point = pos.get_point_from_position()
+                point = pos.get_point_from_position(True)
                 if self.config.colors and pos.should_print_intersection():
                     dir1, dir2 = pos.get_normal_directions()
                     p1 = point.moved_direction(dir1, self.config.line_width)

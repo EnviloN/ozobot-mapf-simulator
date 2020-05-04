@@ -12,6 +12,6 @@ class DummyAgent(Agent):
     def update_path(self, time):
         self.active_path.clear()
         for i in range(1, len(self.positions)):
-            start = self.positions[i-1].get_middle()
-            end = self.positions[i].get_middle()
+            start = self.positions[i-1].tile.get_middle()
+            end = self.positions[i].tile.get_middle()
             self.active_path.add_drawable(Line(start, end, self.config.line_width))

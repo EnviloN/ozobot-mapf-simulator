@@ -31,7 +31,7 @@ class PathPosition:
             self.offset = (self.time - middle) / (leave - middle)
             self.is_first_half = False
 
-    def get_point_from_position(self):
+    def get_point_from_position(self, bounded=False):
         if self.is_first_half:
             enter, middle = self.pos_tile.tile.get_edge_middle(self.pos_tile.from_dir), \
                             self.pos_tile.tile.get_middle()
@@ -41,15 +41,20 @@ class PathPosition:
                             self.pos_tile.tile.get_edge_middle(self.pos_tile.to_dir)
             position = middle.offset_to(leave, self.offset)
 
+        return self.__bound_position_from_middle(position) if bounded else position
+
+    def __bound_position_from_middle(self, position):
         if self.pos_tile.type == PositionTypes.STOP:
             # Stop path before the tile middle
             enter, middle = self.pos_tile.tile.get_edge_middle(self.pos_tile.from_dir), \
                             self.pos_tile.tile.get_middle()
             bound = enter.offset_to(middle, 0.5)
             if bound.dist_to(middle) > position.dist_to(middle):
-                position = bound
-
-        return position
+                return bound
+            else:
+                return position
+        else:
+            return position
 
     def get_angle_from_position(self, tile_size, line_width):
         origin, s_angle, e_angle = None, None, None
