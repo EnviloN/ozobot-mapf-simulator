@@ -1,9 +1,10 @@
 import logging
 
-from ozobotmapf.graphics.drawables import FullArrow, DrawableGroup, Line
+from ozobotmapf.graphics.drawables import FullArrow, DrawableGroup, Line, Arc
+from ozobotmapf.graphics.shapes import Rectangle
 from ozobotmapf.simulator.path_position import PathPosition
 from ozobotmapf.simulator.position_tile import PositionTile
-from ozobotmapf.utils.constants import Directions, PositionTypes
+from ozobotmapf.utils.constants import Directions
 
 
 class Agent:
@@ -96,8 +97,7 @@ class Agent:
         position = PathPosition(time, self.max_time)
 
         current_pos_id = self.__position_id_from_time(position.time)
-        prev_t, curr_t, next_t = self.__get_tile_position_window(current_pos_id)
-        position.set_position_window(prev_t, curr_t, next_t)
+        position.set_position_tile(self.positions[current_pos_id])
 
         enter, middle, leave = self.__time_window_from_position(current_pos_id)
         position.set_time_window(enter, middle, leave)
@@ -167,7 +167,10 @@ class Agent:
         real_len = len(self.raw_steps) - self.raw_steps[::-1].index(last_step) + 1
         self.raw_positions = self.raw_positions[:real_len]
 
-    def _add_path_line(self, p_from, p_to):
-        self.active_path.add_drawable(
-            Line(p_from, p_to, self.config.line_width)
-        )
+    def _line_drawable(self, p_from, p_to):
+        return Line(p_from, p_to, self.config.line_width)
+
+    def _arc_drawable(self, box_origin, start, end):
+        box_size = self.config.tile_size + self.config.line_width
+        box = Rectangle(box_origin, box_size, box_size)
+        return Arc(box, start, end, self.config.line_width)

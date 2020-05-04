@@ -2,7 +2,7 @@ import pygame
 
 
 class Timer:
-    DEBUG_SPEED = 100
+    DEBUG_SPEED = 200
 
     def __init__(self, debug=False):
         self.start_ticks = None

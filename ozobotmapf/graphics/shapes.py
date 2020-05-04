@@ -1,3 +1,6 @@
+from ozobotmapf.utils.constants import Directions
+
+
 class Point:
     """Class representing a point in 2D space.
 
@@ -28,6 +31,18 @@ class Point:
             Point: New point instance moved by x and y
         """
         return Point(self.x + x, self.y + y)
+
+    def moved_direction(self, direction, by):
+        if direction == Directions.UP:
+            return self.moved(0, -by)
+        elif direction == Directions.DOWN:
+            return self.moved(0, by)
+        elif direction == Directions.RIGHT:
+            return self.moved(by, 0)
+        elif direction == Directions.LEFT:
+            return self.moved(-by, 0)
+        else:
+            return self
 
     def offset_to(self, other, offset):
         x_off = (other.x - self.x) * offset

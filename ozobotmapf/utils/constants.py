@@ -43,6 +43,7 @@ class PositionTypes:
     WAIT = 2
     STOP = 3
 
+
 class AgentTypes:
     """Class contains supported agent types (classes)."""
     DUMMY = "dummy"

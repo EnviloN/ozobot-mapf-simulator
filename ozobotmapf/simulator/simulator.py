@@ -48,22 +48,23 @@ class Simulator:
 
     def run(self):
         logging.info("Starting the Simulator process.")
-        # self.__init_screen()
+        self.__init_screen()
 
-        # self.__preview_map()
+        self.__preview_map()
         # self.__wait_for_user()
 
-        # self.timer.start(self.__get_longest_path_time())
-        #
-        # while not self.timer.is_finished():
-        #     self.__handle_events()
-        #     time = self.timer.get_time()
-        #     self.__update_agents(time)
-        #     self.__draw_map().__draw_active_paths().__update()
-        #
+        self.timer.start(self.__get_longest_path_time())
+
+        while not self.timer.is_finished():
+            self.__handle_events()
+            time = self.timer.get_time()
+            self.__update_agents(time)
+            self.__draw_map().__draw_active_paths()
+            self.__update()
+
         # self.__wait_for_user()
 
-        # pygame.quit()
+        pygame.quit()
         logging.info("Successfully finished the Simulator process.")
 
     @staticmethod

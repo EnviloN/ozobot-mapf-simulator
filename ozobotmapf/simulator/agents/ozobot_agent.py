@@ -1,4 +1,6 @@
 from ozobotmapf.simulator.agents.agent import Agent
+from ozobotmapf.simulator.agents.path_drawable import PathDrawable
+from ozobotmapf.utils.constants import PositionTypes
 
 
 class OzobotAgent(Agent):
@@ -8,17 +10,37 @@ class OzobotAgent(Agent):
     """
     def __init__(self, agent_id, raw_plans, ozomap, config):
         super().__init__(agent_id, raw_plans, ozomap, config)
+        self.tail = []
 
     def update_path(self, time):
         self.active_path.clear()
+        self.__filter_tail(time)
 
-        head = self._get_position(time)
-        tail = self._get_position(time - self.config.tail_lag)
+        position = self._get_position(time)
+        drawable = self.__create_drawable(position)
+        if drawable:
+            self.tail.append(drawable)
 
-    #     self.__build_active_path(tail, head)
+        self.__activate_tail()
 
-    # def __build_active_path(self, from_pos, to_pos):
-    #     if from_pos.curr_t == to_pos.curr_t:
-    #         self.__build_same_tile_path(from_pos, to_pos)
-    #     else:
-    #         self.__build_different_tile_path(from_pos, to_pos)
+    def __create_drawable(self, pos):
+        if pos.pos_tile.type == PositionTypes.WAIT:
+            return None
+        else:
+            if pos.pos_tile.is_turn:
+                box_origin, s_angle, e_angle = pos.get_angle_from_position(self.config.tile_size, self.config.line_width)
+                if box_origin:
+                    return PathDrawable(self._arc_drawable(box_origin, s_angle, e_angle), pos.time, self.config.tail_lag)
+                else:
+                    return None
+            else:
+                point = pos.get_point_from_position()
+                return PathDrawable(self._line_drawable(point, point), pos.time, self.config.tail_lag)
+
+    def __filter_tail(self, time):
+        while len(self.tail) > 0 and not self.tail[0].is_valid(time):
+            self.tail = self.tail[1:]
+
+    def __activate_tail(self):
+        for p_drawable in self.tail:
+            self.active_path.add_drawable(p_drawable.drawable)
