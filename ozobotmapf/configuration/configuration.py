@@ -54,6 +54,7 @@ class Configuration:
         self.tile_border_width = math.floor(config["ozobot"]["tile_border_width"] * self.mm_to_px)
         self.line_width = round(config["ozobot"]["line_width"] * self.mm_to_px)
         self.wall_width = round(config["ozobot"]["wall_width"] * self.mm_to_px)
+        self.color_code_radius = round(config["ozobot"]["color_code_radius"] * self.mm_to_px)
 
         self.max_map_width = math.floor(self.window_width / self.tile_size)
         self.max_map_height = math.floor(self.window_height / self.tile_size)

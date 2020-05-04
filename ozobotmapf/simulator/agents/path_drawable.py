@@ -33,6 +33,17 @@ class PathSegment(PathDrawable):
                 self.drawable.color = self.colors[2]
 
 
+class TurnSegment(PathDrawable):
+    def __init__(self, drawable, time, duration, is_colored):
+        super().__init__(drawable, time, duration)
+        self.is_colored = is_colored
+        if self.is_colored:
+            self.drawable.color = Colors.BLUE
+
+    def update(self, time):
+        pass
+
+
 class UTurnCode(PathDrawable):
     def __init__(self, drawable, time, duration):
         super().__init__(drawable, time, duration)

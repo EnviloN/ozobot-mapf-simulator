@@ -12,12 +12,14 @@ class PathPosition:
             self.time = time
 
         self.pos_tile = None
+        self.next_pos_tile = None
         self.enter_time, self.middle_time, self.leave_time = 0, 0, 0
         self.offset = 0
         self.is_first_half = False
 
-    def set_position_tile(self, pos):
+    def set_position_tile(self, pos, next_pos):
         self.pos_tile = pos
+        self.next_pos_tile = next_pos
 
     def set_time_window(self, enter, middle, leave):
         self.enter_time = enter
@@ -138,11 +140,11 @@ class PathPosition:
             return angle2, angle1
 
     def should_print_intersection(self):
-        if self.is_first_half and self.offset >= 0.45 and self.pos_tile.intersection_cnt < 1 and \
+        if (not self.pos_tile.is_turn) and self.is_first_half and self.offset >= 0.4 and self.pos_tile.intersection_cnt < 1 and \
                 (not self.pos_tile.type == PositionTypes.STOP) and (not self.pos_tile.type == PositionTypes.START):
             return True
-        elif (not self.is_first_half) and self.offset >= 0.6 and self.pos_tile.intersection_cnt < 2 and \
-                (not self.pos_tile.type == PositionTypes.STOP):
+        elif (not self.pos_tile.is_turn) and (not self.is_first_half) and self.offset >= 0.7 and self.pos_tile.intersection_cnt < 2 and \
+                (not self.pos_tile.type == PositionTypes.STOP) and (not self.pos_tile.type == PositionTypes.START):
             return True
         else:
             return False

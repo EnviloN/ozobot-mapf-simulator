@@ -17,7 +17,7 @@ class Colors:
     YELLOW = pygame.Color(255, 255, 0)
 
     START = pygame.Color(230, 255, 230)
-    FINISH = pygame.Color(255, 204, 204)
+    FINISH = pygame.Color(255, 230, 230)
 
 
 class Values:

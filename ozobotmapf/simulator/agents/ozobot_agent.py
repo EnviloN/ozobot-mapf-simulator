@@ -1,8 +1,6 @@
-import math
-
 from ozobotmapf.graphics.drawables import Circle
 from ozobotmapf.simulator.agents.agent import Agent
-from ozobotmapf.simulator.agents.path_drawable import PathDrawable, UTurnCode, PathSegment
+from ozobotmapf.simulator.agents.path_drawable import UTurnCode, PathSegment, TurnSegment
 from ozobotmapf.utils.constants import PositionTypes
 
 
@@ -33,42 +31,49 @@ class OzobotAgent(Agent):
             if pos.pos_tile.is_turn and not (pos.pos_tile.type == PositionTypes.START):
                 box_origin, s_angle, e_angle = pos.get_angle_from_position(self.config.tile_size, self.config.line_width)
                 if box_origin:
-                    if self.config.colors and pos.should_print_intersection():
-                        center_move = self.config.tile_size / 2 + self.config.line_width / 2
-                        radius = self.config.tile_size / 2
-                        center = box_origin.moved(center_move, center_move)
-                        x = radius * math.cos(math.radians(s_angle))
-                        y = radius * math.sin(math.radians(s_angle))
-                        point = center.moved(x, -y)
-                        p1 = center.offset_to(point, 0.7)
-                        p2 = center.offset_to(point, 1.3)
-                        self.tail.append(PathSegment(
-                            self._line_drawable(p1, p2),
-                            pos.time, self.config.tail_lag, self.config.colors))
-                        pos.pos_tile.intersection_cnt += 1
-                    else:
-                        self.tail.append(PathSegment(
-                            self._arc_drawable(box_origin, s_angle, e_angle),
-                            pos.time, self.config.tail_lag, self.config.colors)
-                        )
+                    self.tail.append(TurnSegment(
+                        self._arc_drawable(box_origin, s_angle, e_angle),
+                        pos.time, self.config.tail_lag, self.config.colors)
+                    )
             else:
                 point = pos.get_point_from_position(True)
                 if self.config.colors and pos.should_print_intersection():
                     dir1, dir2 = pos.get_normal_directions()
                     p1 = point.moved_direction(dir1, self.config.line_width)
                     p2 = point.moved_direction(dir2, self.config.line_width)
-                    self.tail.append(PathSegment(
-                        self._line_drawable(p1, p2),
-                        pos.time, self.config.tail_lag, self.config.colors))
+                    if pos.next_pos_tile.is_turn and not pos.is_first_half:
+                        segments = [TurnSegment(
+                            self._line_drawable(p1, p2),
+                            pos.time, self.config.tail_lag, self.config.colors),
+                            TurnSegment(
+                                self._line_drawable(point, point.moved_direction(pos.pos_tile.from_dir, 15)),
+                                pos.time, self.config.tail_lag, self.config.colors)
+                        ]
+                    else:
+                        segments = [PathSegment(
+                            self._line_drawable(p1, p2),
+                            pos.time, self.config.tail_lag, self.config.colors),
+                            PathSegment(
+                                self._line_drawable(point, point.moved_direction(pos.pos_tile.from_dir, 15)),
+                                pos.time, self.config.tail_lag, self.config.colors)
+                        ]
+                    for segment in segments:
+                        self.tail.append(segment)
                     pos.pos_tile.intersection_cnt += 1
                 else:
-                    self.tail.append(PathSegment(
-                        self._line_drawable(point, point),
-                        pos.time, self.config.tail_lag, self.config.colors))
+                    if pos.next_pos_tile.is_turn and not pos.is_first_half and pos.offset >= 0.65:
+                        segment = TurnSegment(
+                            self._line_drawable(point, point),
+                            pos.time, self.config.tail_lag, self.config.colors)
+                    else:
+                        segment = PathSegment(
+                            self._line_drawable(point, point),
+                            pos.time, self.config.tail_lag, self.config.colors)
+                    self.tail.append(segment)
 
     def __add_color_code(self, pos, time):
         pos.pos_tile.u_turn = False
-        circle = Circle(pos.pos_tile.tile.get_middle(), self.config.line_width)
+        circle = Circle(pos.pos_tile.tile.get_middle(), self.config.color_code_radius)
         code = UTurnCode(circle, time, self.config.tail_lag)
         self.tail.append(code)
 
