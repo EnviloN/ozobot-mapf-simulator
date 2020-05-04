@@ -9,11 +9,15 @@ class Colors:
     WHITE = pygame.Color(255, 255, 255)
     BLACK = pygame.Color(0, 0, 0)
     GREY = pygame.Color(150, 150, 150)
+    RED = pygame.Color(255, 0, 0)
+    GREEN = pygame.Color(0, 255, 0)
+    BLUE = pygame.Color(0, 0, 255)
+    CYAN = pygame.Color(0, 255, 255)
+    MAGENTA = pygame.Color(255, 0, 255)
+    YELLOW = pygame.Color(255, 255, 0)
+
     START = pygame.Color(230, 255, 230)
     FINISH = pygame.Color(255, 204, 204)
-    RED = pygame.Color(255, 0, 0)
-    YELLOW = pygame.Color(255, 255, 0)
-    CYAN = pygame.Color(0,255,255)
 
 
 class Values:
