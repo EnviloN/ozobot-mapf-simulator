@@ -13,6 +13,7 @@ class PositionTile:
         self.type = self.__get_type()
         self.is_turn = False
         self.u_turn = False
+        self.intersection_cnt = 0
 
     def __get_type(self):
         if self.from_dir == Directions.NONE and self.to_dir == Directions.NONE:

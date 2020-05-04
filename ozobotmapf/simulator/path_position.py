@@ -131,3 +131,27 @@ class PathPosition:
             return angle1, angle2
         else:
             return angle2, angle1
+
+    def should_print_intersection(self):
+        if self.is_first_half and self.offset >= 0.45 and self.pos_tile.intersection_cnt < 1 and \
+                (not self.pos_tile.type == PositionTypes.STOP) and (not self.pos_tile.type == PositionTypes.START):
+            return True
+        elif (not self.is_first_half) and self.offset >= 0.6 and self.pos_tile.intersection_cnt < 2 and \
+                (not self.pos_tile.type == PositionTypes.STOP):
+            return True
+        else:
+            return False
+
+    def get_normal_directions(self):
+        horizontal = {Directions.LEFT, Directions.RIGHT}
+        vertical = {Directions.UP, Directions.DOWN}
+        if self.pos_tile.type == PositionTypes.STOP:
+            if self.pos_tile.from_dir in horizontal:
+                return vertical
+            else:
+                return horizontal
+        else:
+            if self.pos_tile.to_dir in horizontal:
+                return vertical
+            else:
+                return horizontal
