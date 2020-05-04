@@ -109,6 +109,16 @@ class Arc(Drawable):
         pygame.draw.arc(screen, self.color, self.bounding_box, self.starting_angle, self.end_angle, self.width)
 
 
+class Circle(Drawable):
+    def __init__(self, origin, radius, color=Colors.BLACK):
+        self.origin = origin
+        self.radius = radius
+        self.color = color
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, self.origin, self.radius)
+
+
 class DrawableGroup(Drawable):
     def __init__(self):
         self.list = []

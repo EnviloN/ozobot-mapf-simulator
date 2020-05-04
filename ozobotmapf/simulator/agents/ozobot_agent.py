@@ -1,5 +1,6 @@
+from ozobotmapf.graphics.drawables import Circle
 from ozobotmapf.simulator.agents.agent import Agent
-from ozobotmapf.simulator.agents.path_drawable import PathDrawable
+from ozobotmapf.simulator.agents.path_drawable import PathDrawable, UTurnCode
 from ozobotmapf.utils.constants import PositionTypes
 
 
@@ -11,17 +12,25 @@ class OzobotAgent(Agent):
     def __init__(self, agent_id, raw_plans, ozomap, config):
         super().__init__(agent_id, raw_plans, ozomap, config)
         self.tail = []
+        self.codes = []
 
     def update_path(self, time):
         self.active_path.clear()
         self.__filter_tail(time)
+        self.__filter_codes(time)
 
         position = self._get_position(time)
         drawable = self.__create_drawable(position)
         if drawable:
             self.tail.append(drawable)
+        if position.pos_tile.u_turn and not position.is_first_half:
+            position.pos_tile.u_turn = False
+            circle = Circle(position.pos_tile.tile.get_middle(), self.config.line_width)
+            code = UTurnCode(circle, time, self.config.tail_lag)
+            self.codes.append(code)
 
         self.__activate_tail()
+        self.__activate_codes()
 
     def __create_drawable(self, pos):
         if pos.pos_tile.type == PositionTypes.WAIT:
@@ -41,6 +50,19 @@ class OzobotAgent(Agent):
         while len(self.tail) > 0 and not self.tail[0].is_valid(time):
             self.tail = self.tail[1:]
 
+    def __filter_codes(self, time):
+        remove = []
+        for code in self.codes:
+            if not code.is_valid(time):
+                remove.append(code)
+
+        for code in remove:
+            self.codes.remove(code)
+
     def __activate_tail(self):
         for p_drawable in self.tail:
             self.active_path.add_drawable(p_drawable.drawable)
+
+    def __activate_codes(self):
+        for code in self.codes:
+            self.active_path.add_drawable(code.drawable)
