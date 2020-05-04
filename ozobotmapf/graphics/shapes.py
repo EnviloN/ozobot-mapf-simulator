@@ -1,3 +1,5 @@
+import math
+
 from ozobotmapf.utils.constants import Directions
 
 
@@ -48,6 +50,9 @@ class Point:
         x_off = (other.x - self.x) * offset
         y_off = (other.y - self.y) * offset
         return self.moved(x_off, y_off)
+
+    def dist_to(self, other):
+        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
     def to_list(self):
         """Method returns the point in a pair representation."""

@@ -51,7 +51,7 @@ class Simulator:
         self.__init_screen()
 
         self.__preview_map()
-        # self.__wait_for_user()
+        self.__wait_for_user()
 
         self.timer.start(self.__get_longest_path_time())
 
@@ -62,7 +62,7 @@ class Simulator:
             self.__draw_map().__draw_active_paths()
             self.__update()
 
-        # self.__wait_for_user()
+        self.__wait_for_user()
 
         pygame.quit()
         logging.info("Successfully finished the Simulator process.")

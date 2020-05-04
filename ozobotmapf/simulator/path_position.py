@@ -43,63 +43,60 @@ class PathPosition:
 
         if self.pos_tile.type == PositionTypes.STOP:
             # Stop path before the tile middle
-            pass
+            enter, middle = self.pos_tile.tile.get_edge_middle(self.pos_tile.from_dir), \
+                            self.pos_tile.tile.get_middle()
+            bound = enter.offset_to(middle, 0.5)
+            if bound.dist_to(middle) > position.dist_to(middle):
+                position = bound
 
         return position
 
     def get_angle_from_position(self, tile_size, line_width):
+        origin, s_angle, e_angle = None, None, None
+
         if (self.is_first_half and self.pos_tile.type == PositionTypes.START) or \
                 (not self.is_first_half and self.pos_tile.type == PositionTypes.STOP):
-            return None, None, None
+            return origin, s_angle, e_angle
 
         from_dir = self.pos_tile.previous_direction
         to_dir = self.pos_tile.next_direction
         origin = self.pos_tile.tile.get_middle().moved(-line_width/2, -line_width/2)
+
         if from_dir == Directions.UP:
-            if to_dir == Directions.RIGHT:
-                # Left turn from Up (3)
+            if to_dir == Directions.RIGHT:  # Left turn from Up (3)
                 s_angle, e_angle = self.__left_turn_angles(from_dir)
                 origin = origin.moved_direction(Directions.UP, tile_size)
-                return origin, s_angle, e_angle
-            elif to_dir == Directions.LEFT:
-                # Right turn from Up (4)
+            elif to_dir == Directions.LEFT:  # Right turn from Up (4)
                 s_angle, e_angle = self.__right_turn_angles(from_dir)
                 origin = origin.moved(-tile_size, -tile_size)
                 return origin, s_angle, e_angle
         elif from_dir == Directions.DOWN:
-            if to_dir == Directions.RIGHT:
-                # Right turn from Down (1)
+            if to_dir == Directions.RIGHT:  # Right turn from Down (1)
                 s_angle, e_angle = self.__right_turn_angles(from_dir)
                 return origin, s_angle, e_angle
-            elif to_dir == Directions.LEFT:
-                # Left turn from Down (2)
+            elif to_dir == Directions.LEFT:  # Left turn from Down (2)
                 s_angle, e_angle = self.__left_turn_angles(from_dir)
                 origin = origin.moved_direction(Directions.LEFT, tile_size)
                 return origin, s_angle, e_angle
         elif from_dir == Directions.RIGHT:
-            if to_dir == Directions.UP:
-                # Right turn from Right (3)
+            if to_dir == Directions.UP:  # Right turn from Right (3)
                 s_angle, e_angle = self.__right_turn_angles(from_dir)
                 origin = origin.moved_direction(Directions.UP, tile_size)
                 return origin, s_angle, e_angle
-            elif to_dir == Directions.DOWN:
-                # Left turn from Right (1)
+            elif to_dir == Directions.DOWN:  # Left turn from Right (1)
                 s_angle, e_angle = self.__left_turn_angles(from_dir)
                 return origin, s_angle, e_angle
         elif from_dir == Directions.LEFT:
-            if to_dir == Directions.UP:
-                # Left turn from Left (4)
+            if to_dir == Directions.UP:  # Left turn from Left (4)
                 s_angle, e_angle = self.__left_turn_angles(from_dir)
                 origin = origin.moved(-tile_size, -tile_size)
-                return origin, s_angle, e_angle
-            elif to_dir == Directions.DOWN:
-                # Right turn from Left (2)
+            elif to_dir == Directions.DOWN:  # Right turn from Left (2)
                 s_angle, e_angle = self.__right_turn_angles(from_dir)
                 origin = origin.moved_direction(Directions.LEFT, tile_size)
-                return origin, s_angle, e_angle
         else:
             raise Exception("Getting arc path angle, but it is not a turn.")
-        return None, None, None
+
+        return origin, s_angle, e_angle
 
     def __left_turn_angles(self, from_dir):
         angle = 0
@@ -111,7 +108,7 @@ class PathPosition:
             angle = 180 if self.is_first_half else 225
         elif from_dir == Directions.LEFT:
             angle = 270 if self.is_first_half else 315
-        angle1 = angle + (45 * self.offset)
+        angle1 = angle + 2*(22.5 * self.offset)
         angle2 = angle1 - 3
         if angle1 < angle2:
             return angle1, angle2
