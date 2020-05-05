@@ -1,5 +1,6 @@
 import logging
 
+from ozobotmapf.mapf_solvers.manual_solver import ManualSolver
 from ozobotmapf.simulator.simulator import Simulator
 from ozobotmapf.map_editor.editor import Editor
 from ozobotmapf.configuration.configuration import EditorConfig, SimulatorConfig
@@ -65,8 +66,9 @@ def init_solver(config):
     """Function initializes the solver instance with given arguments."""
     # MAPF Algorithms: cbs, cbs+, cbs++, smtcbs, smtcbs+, smtcbs++
     solver_args = {"input-file": config.map_path, "algorithm": "smtcbs++"}
-    solvers=["mapf_solver_boOX", "rota_solver_boOX"]
+    solvers = ["mapf_solver_boOX", "rota_solver_boOX"]
     solver = MapfSolverBoOX(config.solver_path + solvers[0], solver_args)
+    # solver = ManualSolver()
     logging.info("Solver initialized.")
     return solver
 

@@ -28,7 +28,7 @@ class OzobotAgent(Agent):
 
     def __add_drawables(self, pos):
         if pos.pos_tile.type != PositionTypes.WAIT:
-            if pos.pos_tile.is_turn and not (pos.pos_tile.type == PositionTypes.START):
+            if pos.pos_tile.is_turn and not (pos.pos_tile.type == PositionTypes.STOP):
                 box_origin, s_angle, e_angle = pos.get_angle_from_position(self.config.tile_size, self.config.line_width)
                 if box_origin:
                     self.tail.append(TurnSegment(
@@ -61,15 +61,25 @@ class OzobotAgent(Agent):
                         self.tail.append(segment)
                     pos.pos_tile.intersection_cnt += 1
                 else:
-                    if pos.next_pos_tile.is_turn and not pos.is_first_half and pos.offset >= 0.65:
-                        segment = TurnSegment(
-                            self._line_drawable(point, point),
-                            pos.time, self.config.tail_lag, self.config.colors)
+                    if not (pos.pos_tile.type == PositionTypes.STOP and pos.pos_tile.is_turn):
+                        if pos.next_pos_tile.is_turn and not pos.is_first_half and pos.offset >= 0.65:
+                            segments = [TurnSegment(
+                                self._line_drawable(point, point),
+                                pos.time, self.config.tail_lag, self.config.colors)]
+                        else:
+                            segments = [PathSegment(
+                                self._line_drawable(point, point),
+                                pos.time, self.config.tail_lag, self.config.colors)]
+
+                        for segment in segments:
+                            self.tail.append(segment)
                     else:
-                        segment = PathSegment(
-                            self._line_drawable(point, point),
-                            pos.time, self.config.tail_lag, self.config.colors)
-                    self.tail.append(segment)
+                        entry = pos.pos_tile.tile.get_edge_middle(pos.pos_tile.previous_direction)
+                        leave = pos.pos_tile.tile.get_edge_middle(pos.pos_tile.next_direction)
+                        p = pos.pos_tile.tile.get_middle().moved_direction(pos.pos_tile.next_direction, self.config.tile_size / 3)
+                        self.tail.append(PathSegment(
+                            self._line_drawable(entry, entry.offset_to(p, 0.5)),
+                            pos.time, self.config.tail_lag, self.config.colors))
 
     def __add_color_code(self, pos, time):
         pos.pos_tile.u_turn = False

@@ -115,7 +115,7 @@ class PathPosition:
             angle = 180 if self.is_first_half else 225
         elif from_dir == Directions.LEFT:
             angle = 270 if self.is_first_half else 315
-        angle1 = angle + 2*(22.5 * self.offset)
+        angle1 = angle + (45 * self.offset)
         angle2 = angle1 - 3
         if angle1 < angle2:
             return angle1, angle2
@@ -132,6 +132,7 @@ class PathPosition:
             angle = 360 if self.is_first_half else 315
         elif from_dir == Directions.LEFT:
             angle = 90 if self.is_first_half else 45
+
         angle1 = angle - (45 * self.offset)
         angle2 = angle1 + 3
         if angle1 < angle2:

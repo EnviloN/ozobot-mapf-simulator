@@ -48,7 +48,7 @@ class UTurnCode(PathDrawable):
     def __init__(self, drawable, time, duration):
         super().__init__(drawable, time, duration)
         self.last_switch = time
-        self.next_switch = time + 45
+        self.next_switch = time + 42
         self.current_color = 0
         self.colors = [Colors.RED, Colors.YELLOW, Colors.CYAN, Colors.YELLOW]
         self.drawable.color = self.colors[self.current_color]
@@ -56,6 +56,6 @@ class UTurnCode(PathDrawable):
     def update(self, time):
         if time >= self.next_switch:
             self.last_switch = self.next_switch
-            self.next_switch = self.next_switch + 45
+            self.next_switch = self.next_switch + 42
             self.current_color += 1
             self.drawable.color = self.colors[self.current_color % 4]
