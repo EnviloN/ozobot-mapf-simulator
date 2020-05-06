@@ -39,8 +39,8 @@ class OzobotAgent(Agent):
                 point = pos.get_point_from_position(True)
                 if self.config.colors and pos.should_print_intersection():
                     dir1, dir2 = pos.get_normal_directions()
-                    p1 = point.moved_direction(dir1, self.config.line_width)
-                    p2 = point.moved_direction(dir2, self.config.line_width)
+                    p1 = point.moved_direction(dir1, self.config.line_width * 2)
+                    p2 = point.moved_direction(dir2, self.config.line_width * 2)
                     if pos.next_pos_tile.is_turn and not pos.is_first_half:
                         segments = [TurnSegment(
                             self._line_drawable(p1, p2),
