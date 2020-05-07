@@ -1,4 +1,3 @@
-from ozobotmapf.utils.Utils import deg_to_rad
 from ozobotmapf.utils.constants import Directions, PositionTypes
 
 
@@ -33,41 +32,48 @@ class PathPosition:
             self.offset = (self.time - middle) / (leave - middle)
             self.is_first_half = False
 
-    def get_point_from_position(self, bounded=False):
-        if self.is_first_half:
-            enter, middle = self.pos_tile.tile.get_edge_middle(self.pos_tile.from_dir), \
-                            self.pos_tile.tile.get_middle()
-            position = enter.offset_to(middle, self.offset)
-        else:
-            middle, leave = self.pos_tile.tile.get_middle(), \
-                            self.pos_tile.tile.get_edge_middle(self.pos_tile.to_dir)
-            position = middle.offset_to(leave, self.offset)
+    def get_tile(self):
+        return self.pos_tile.tile
 
+    def is_turn(self):
+        return self.pos_tile.is_turn
+
+    def get_type(self):
+        return self.pos_tile.type
+
+    def get_point_from_position(self, bounded=False):
+        middle = self.get_tile().get_middle()
+        if self.is_first_half:
+            point_from = self.get_tile().get_edge_middle(self.pos_tile.from_dir)
+            point_to = middle
+        else:
+            point_from = middle
+            point_to = self.get_tile().get_edge_middle(self.pos_tile.to_dir)
+
+        position = point_from.offset_to(point_to, self.offset)
         return self.__bound_position_from_middle(position) if bounded else position
 
     def __bound_position_from_middle(self, position):
-        if self.pos_tile.type == PositionTypes.STOP:
+        if self.get_type() == PositionTypes.STOP:
             # Stop path before the tile middle
-            enter, middle = self.pos_tile.tile.get_edge_middle(self.pos_tile.from_dir), \
-                            self.pos_tile.tile.get_middle()
+            enter = self.get_tile().get_edge_middle(self.pos_tile.from_dir)
+            middle = self.get_tile().get_middle()
             bound = enter.offset_to(middle, 0.5)
             if bound.dist_to(middle) > position.dist_to(middle):
                 return bound
-            else:
-                return position
-        else:
-            return position
+
+        return position
 
     def get_angle_from_position(self, tile_size, line_width):
         origin, s_angle, e_angle = None, None, None
 
-        if (self.is_first_half and self.pos_tile.type == PositionTypes.START) or \
-                (not self.is_first_half and self.pos_tile.type == PositionTypes.STOP):
+        if (self.is_first_half and self.get_type() == PositionTypes.START) or \
+                (not self.is_first_half and self.get_type() == PositionTypes.STOP):
             return origin, s_angle, e_angle
 
         from_dir = self.pos_tile.previous_direction
         to_dir = self.pos_tile.next_direction
-        origin = self.pos_tile.tile.get_middle().moved(-line_width/2, -line_width/2)
+        origin = self.pos_tile.tile.get_middle().moved(-line_width / 2, -line_width / 2)
 
         if from_dir == Directions.UP:
             if to_dir == Directions.RIGHT:  # Left turn from Up (3)
@@ -141,25 +147,14 @@ class PathPosition:
             return angle2, angle1
 
     def should_print_intersection(self):
-        if (not self.pos_tile.is_turn) and self.is_first_half and self.offset >= 0.4 and self.pos_tile.intersection_cnt < 1 and \
-                (not self.pos_tile.type == PositionTypes.STOP) and (not self.pos_tile.type == PositionTypes.START):
-            return True
-        elif (not self.pos_tile.is_turn) and (not self.is_first_half) and self.offset >= 0.7 and self.pos_tile.intersection_cnt < 2 and \
-                (not self.pos_tile.type == PositionTypes.STOP) and (not self.pos_tile.type == PositionTypes.START):
-            return True
-        else:
-            return False
+        return ((not self.is_turn()) and self.is_first_half and self.offset >= 0.4 and
+                self.pos_tile.intersection_cnt < 1 and self.get_type() == PositionTypes.PASS) or \
+               ((not self.is_turn()) and (not self.is_first_half) and self.offset >= 0.7 and
+                self.pos_tile.intersection_cnt < 2 and self.get_type() == PositionTypes.PASS)
 
     def get_normal_directions(self):
-        horizontal = {Directions.LEFT, Directions.RIGHT}
-        vertical = {Directions.UP, Directions.DOWN}
-        if self.pos_tile.type == PositionTypes.STOP:
-            if self.pos_tile.from_dir in horizontal:
-                return vertical
-            else:
-                return horizontal
+        direction = self.pos_tile.from_dir if self.is_first_half else self.pos_tile.to_dir
+        if direction in Directions.HORIZONTAL:
+            return Directions.VERTICAL
         else:
-            if self.pos_tile.to_dir in horizontal:
-                return vertical
-            else:
-                return horizontal
+            return Directions.HORIZONTAL

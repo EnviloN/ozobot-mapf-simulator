@@ -18,7 +18,7 @@ class PathSegment(PathDrawable):
         super().__init__(drawable, time, duration)
         self.is_colored = is_colored
         colored_time = duration / 3
-        self.color_times = [time + colored_time, time + 2*colored_time, time + 3*colored_time]
+        self.color_times = [time + colored_time, time + (2 * colored_time), time + (3 * colored_time)]
         self.colors = [Colors.BLUE, Colors.BLACK, Colors.RED]
         if self.is_colored:
             self.drawable.color = self.colors[0]

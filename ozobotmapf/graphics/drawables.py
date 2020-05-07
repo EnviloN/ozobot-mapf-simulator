@@ -2,17 +2,19 @@ import math
 import pygame
 
 from ozobotmapf.graphics.shapes import Point, Rectangle
-from ozobotmapf.utils import Utils
 from ozobotmapf.utils.constants import Colors, Directions
 
 
 class Drawable:
+    """Abstract class wrapping several pyGame objects that can be drawn to the screen."""
+
     def draw(self, screen):
+        """Method supporting drawing to the screen."""
         pass
 
 
 class Line(Drawable):
-    def __init__(self, start, end, width=1, color=Colors.BLACK):
+    def __init__(self, start: Point, end: Point, width: int = 1, color=Colors.BLACK):
         self.start, self.end = Point(*start.to_list()), Point(*end.to_list())
         self.width = width
         self.color = color
@@ -39,7 +41,7 @@ class Line(Drawable):
 
 
 class Rect(Drawable):
-    def __init__(self, rectangle, width=1, color=Colors.BLACK):
+    def __init__(self, rectangle: Rectangle, width: int = 1, color=Colors.BLACK):
         self.rect = Rectangle(*rectangle.to_list())
         self.width = width
         self.color = color
@@ -49,7 +51,7 @@ class Rect(Drawable):
 
 
 class FillRect(Drawable):
-    def __init__(self, rectangle, color=Colors.WHITE):
+    def __init__(self, rectangle: Rectangle, color=Colors.WHITE):
         self.rect = Rectangle(*rectangle.to_list())
         self.color = color
 
@@ -58,7 +60,7 @@ class FillRect(Drawable):
 
 
 class FillChecker(Drawable):
-    def __init__(self, rectangle, color1=Colors.WHITE, color2=Colors.BLACK, splits=10):
+    def __init__(self, rectangle: Rectangle, color1=Colors.WHITE, color2=Colors.BLACK, splits=10):
         self.rect = Rectangle(*rectangle.to_list())
         self.colors = [color1, color2]
         self.splits = splits
@@ -77,7 +79,7 @@ class FillChecker(Drawable):
 
 
 class FullArrow(Drawable):
-    def __init__(self, center, direction, width, color=Colors.BLACK):
+    def __init__(self, center: Point, direction: Directions, width: int, color=Colors.BLACK):
         self.corners = self.__compute_corners(center, direction, width)
         self.color = color
 
@@ -85,8 +87,8 @@ class FullArrow(Drawable):
         pygame.draw.polygon(screen, self.color, self.corners)
 
     @staticmethod
-    def __compute_corners(center, direction, width):
-        half = width / 2
+    def __compute_corners(center: Point, direction: Directions, width: int):
+        half = int(width / 2)
         if direction == Directions.UP:
             return [center.moved(half, half), center.moved(-half, half), center.moved(0, -half)]
         elif direction == Directions.RIGHT:
@@ -98,10 +100,10 @@ class FullArrow(Drawable):
 
 
 class Arc(Drawable):
-    def __init__(self, bounding_box, start_angle, end_angle, width=1, color=Colors.BLACK):
+    def __init__(self, bounding_box: Rectangle, start_angle: int, end_angle: int, width: int = 1, color=Colors.BLACK):
         self.bounding_box = bounding_box
-        self.starting_angle = Utils.deg_to_rad(start_angle)
-        self.end_angle = Utils.deg_to_rad(end_angle)
+        self.starting_angle = math.radians(start_angle)
+        self.end_angle = math.radians(end_angle)
         self.width = width
         self.color = color
 
@@ -110,7 +112,7 @@ class Arc(Drawable):
 
 
 class Circle(Drawable):
-    def __init__(self, origin, radius, color=Colors.BLACK):
+    def __init__(self, origin: Point, radius: int, color=Colors.BLACK):
         self.origin = origin
         self.radius = radius
         self.color = color
@@ -127,7 +129,7 @@ class DrawableGroup(Drawable):
         for drawable in self.list:
             drawable.draw(screen)
 
-    def add_drawable(self, drawable):
+    def add_drawable(self, drawable: Drawable):
         self.list.append(drawable)
 
     def clear(self):

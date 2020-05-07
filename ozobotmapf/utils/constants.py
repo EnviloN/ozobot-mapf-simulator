@@ -42,6 +42,9 @@ class Directions:
     DOWN = 2
     LEFT = 3
 
+    HORIZONTAL = {LEFT, RIGHT}
+    VERTICAL = {UP, DOWN}
+
 
 class PositionTypes:
     """Class contains possible types of positions in agent path."""

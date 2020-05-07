@@ -51,7 +51,7 @@ class MapfSolverBoOX(SubprocessSolver):
         The args attribute also contains a path to a level.
 
     Attributes:
-        solver_path (str): Path to the solver file that is an executable
+        solver (str): Path to the solver file that is an executable
         args (dict[str, str]): Dictionary of all command-line arguments
     """
 

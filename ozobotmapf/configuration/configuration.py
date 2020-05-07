@@ -18,6 +18,8 @@ class Configuration:
         tile_border_width (int): Width of the tile line in pixels
         line_width (int): Width of the following line in pixels
         wall_width (int): Width of the wall line in pixels
+        color_code_radius (int): Radius of the flashing color code circle
+        intersection_width (int): Length of the intersection indicator line
         max_map_width (int): Maximal level width in tiles
         max_map_height (int): Maximal level height in tiles
         top_margin (int): Distance between top of the window and top of the level in pixels
@@ -26,6 +28,14 @@ class Configuration:
         map_width (int): Width of the level in tiles
         map_height (int): Height of the level in tiles
         map_agent_count (int): Number of agents on the level
+        editor (bool): Flag if map editor mode is on
+        display_grid (bool): Flag if tile grid should be displayed
+        display_walls (bool): Flag if walls should be displayed
+        agent_class (class): Class of the agents that should be initialized
+        direction_preview (bool): Flag if direction preview arrow should be displayed before simulation
+        step_time (int): Time that takes animated path to move between two tiles in milliseconds
+        tail_lag (int): Time lag between the head and tail of the animated path in milliseconds
+        colors (bool): Flag if OzobotAgent should use colored paths
     """
 
     def __init__(self, cli, config):
@@ -54,7 +64,8 @@ class Configuration:
         self.tile_border_width = math.floor(config["ozobot"]["tile_border_width"] * self.mm_to_px)
         self.line_width = round(config["ozobot"]["line_width"] * self.mm_to_px)
         self.wall_width = round(config["ozobot"]["wall_width"] * self.mm_to_px)
-        self.color_code_radius = round(config["ozobot"]["color_code_radius"] * self.mm_to_px)
+        self.color_code_radius = None
+        self.intersection_width = None
 
         self.max_map_width = math.floor(self.window_width / self.tile_size)
         self.max_map_height = math.floor(self.window_height / self.tile_size)
@@ -87,6 +98,8 @@ class Configuration:
                "Tile border width: {}px\n" \
                "Following line width: {}px\n" \
                "Wall line width: {}px\n" \
+               "Color Code radius: {}px\n" \
+               "Intersection indicator length: {}px\n" \
                "Max level width: {}\n" \
                "Max level height: {}\n" \
                "Top margin: {}px\n" \
@@ -95,9 +108,9 @@ class Configuration:
                "Map Attributes: [W: {}, H: {}, A: {}]\n" \
                "Map Editor mode: '{}'".format(
             self.map_path, self.solver_path, self.fullscreen, self.window_width, self.window_height, self.mm_to_px,
-            self.tile_size, self.tile_border_width, self.line_width, self.wall_width, self.max_map_width,
-            self.max_map_height, self.top_margin, self.left_margin, self.map_origin[0], self.map_origin[1],
-            self.map_width, self.map_height, self.map_agent_count, self.editor
+            self.tile_size, self.tile_border_width, self.line_width, self.wall_width, self.color_code_radius,
+            self.intersection_width, self.max_map_width, self.max_map_height, self.top_margin, self.left_margin,
+            self.map_origin[0], self.map_origin[1], self.map_width, self.map_height, self.map_agent_count, self.editor
         )
 
 
@@ -116,6 +129,9 @@ class SimulatorConfig(Configuration):
         self.map_path = cli.map_file
         self.solver_path = config["solver"]["path"]
         self.map_width, self.map_height, self.map_agent_count = cli.map_attributes
+
+        self.color_code_radius = round(config["ozobot"]["color_code_radius"] * self.mm_to_px)
+        self.intersection_width = round(config["ozobot"]["intersection_width"] * self.mm_to_px)
 
         self.display_grid = config["simulator"]["display_borders"]
         self.display_walls = config["simulator"]["display_walls"]

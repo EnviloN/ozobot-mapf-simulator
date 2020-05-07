@@ -29,11 +29,8 @@ class PositionTile:
         self.previous_direction = from_dir
         self.next_direction = to_dir
 
-        vertical = {Directions.UP, Directions.DOWN}
-        horizontal = {Directions.RIGHT, Directions.LEFT}
-        if self.previous_direction in horizontal and self.next_direction in vertical:
-            self.is_turn = True
-        elif self.previous_direction in vertical and self.next_direction in horizontal:
+        if (self.previous_direction in Directions.HORIZONTAL and self.next_direction in Directions.VERTICAL) or \
+                (self.previous_direction in Directions.VERTICAL and self.next_direction in Directions.HORIZONTAL):
             self.is_turn = True
 
         if self.type == PositionTypes.STOP and self.previous_direction == self.next_direction:

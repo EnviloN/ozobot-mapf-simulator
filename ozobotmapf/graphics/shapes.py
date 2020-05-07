@@ -35,6 +35,15 @@ class Point:
         return Point(self.x + x, self.y + y)
 
     def moved_direction(self, direction, by):
+        """Method creates a copy of the point moved by a given distance in a given direction.
+
+        Args:
+            direction (Directions): Direction of the point move
+            by (int): Length by which the point should be moved
+
+        Returns:
+            Point: New point instance moved in a given direction
+        """
         if direction == Directions.UP:
             return self.moved(0, -by)
         elif direction == Directions.DOWN:
@@ -47,15 +56,32 @@ class Point:
             return self
 
     def offset_to(self, other, offset):
+        """Method creates a copy of the point moved along the direction towards or from some other given point.
+
+        Args:
+            other (Point): Other point
+            offset (float): Percentage of the move distance to other point (can be greater than 1 or negative)
+
+        Returns:
+            Point: New point instance moved to or from other point by given offset.
+        """
         x_off = (other.x - self.x) * offset
         y_off = (other.y - self.y) * offset
         return self.moved(x_off, y_off)
 
     def dist_to(self, other):
+        """Method computes distance between two points.
+
+        Args:
+            other (Point): Other point
+
+        Returns:
+            float: Distance to the other point
+        """
         return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
     def to_list(self):
-        """Method returns the point in a pair representation."""
+        """Method returns the point in a pair representation.  (for pygame)"""
         return self.x, self.y
 
     def __str__(self):
@@ -74,12 +100,28 @@ class Point:
 
 
 class Rectangle:
+    """Class representing a rectangle in 2D space.
+
+    Attributes:
+        origin (Point): Top-left corner of the rectangle
+        width (int): width of the rectangle
+        height (int): height of the rectangle
+    """
+
     def __init__(self, origin: Point, width: int, height: int):
+        """Initialization of Rectangle instance.
+
+        Args:
+            origin (Point): Top-left corner of the rectangle
+            width (int): width of the rectangle
+            height (int): height of the rectangle
+        """
         self.origin = Point(*origin.to_list())
         self.width = width
         self.height = height
 
     def to_list(self):
+        """Method returns the rectangle in a tuple representation (for pygame)."""
         return self.origin, self.width, self.height
 
     def __str__(self):

@@ -86,10 +86,9 @@ class Simulator:
                 pygame.quit()
                 sys.exit()
 
-    def __draw_map(self, preview=False):
+    def __draw_map(self):
         self.__screen.fill(Colors.WHITE)
 
-        # if preview:
         self.map_objects[0].draw(self.__screen)  # Agent Starts/Ends
 
         if self.config.display_grid:
@@ -113,7 +112,7 @@ class Simulator:
         return self
 
     def __preview_map(self):
-        self.__draw_map(True)
+        self.__draw_map()
 
         if self.config.direction_preview:
             for agent in self.agents:

@@ -2,7 +2,7 @@ import pygame
 
 
 class Timer:
-    DEBUG_SPEED = 50
+    DEBUG_SPEED = 50  # How much milliseconds time advances by each game loop.
 
     def __init__(self, debug=False):
         self.start_ticks = None

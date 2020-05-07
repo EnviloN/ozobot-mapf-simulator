@@ -34,7 +34,14 @@ class Tile:
         return True if self.agent_finish > 0 else False
 
     def has_wall(self, direction):
-        """Getter for upper wall."""
+        """Getter for wall in direction.
+
+        Args:
+            direction (Directions): Direction from middle
+
+        Returns:
+            bool: Flag if wall is activated
+        """
         return self.__walls[direction]
 
     def build_all_walls(self):
@@ -42,7 +49,11 @@ class Tile:
         self.__walls = [True] * 4
 
     def build_wall(self, direction):
-        """Sets upper wall to True."""
+        """Sets wall in direction to True.
+
+        Args:
+            direction (Directions): Direction from middle
+        """
         self.__walls[direction] = True
 
     def destroy_all_walls(self):
@@ -50,11 +61,19 @@ class Tile:
         self.__walls = [False] * 4
 
     def destroy_wall(self, direction):
-        """Sets upper wall to False."""
+        """Sets wall in direction to False.
+
+        Args:
+            direction (Directions): Direction from middle
+        """
         self.__walls[direction] = False
 
     def toggle_wall(self, direction):
-        """Sets upper wall to the opposite value."""
+        """Sets wall in direction to the opposite value.
+
+        Args:
+            direction (Directions): Direction from middle
+        """
         self.__walls[direction] = not self.__walls[direction]
 
     def direction_to(self, other):
