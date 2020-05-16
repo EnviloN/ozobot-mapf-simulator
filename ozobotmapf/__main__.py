@@ -50,8 +50,8 @@ def configure_application():
     if not options.debug:
         logging.getLogger().setLevel(logging.INFO)
 
-    config = ConfigOptions(options.config_file).parse()
-    config.update(ConfigOptions(Values.SIMULATOR_CONFIG).parse())
+    config = ConfigOptions(Values.SIMULATOR_CONFIG).parse()
+    config.update(ConfigOptions(options.config_file).parse())
 
     if options.editor:
         config_merge = EditorConfig(options, config)

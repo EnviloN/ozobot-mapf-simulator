@@ -39,7 +39,7 @@ class OzobotAgent(Agent):
                 if not (pos.get_type() == PositionTypes.STOP and pos.is_turn()):
                     self.__add_path_line_segments(pos)
                 else:
-                    self.__add_turn_wait_segment()
+                    self.__add_turn_wait_segment(pos)
 
     def __add_arc_segment(self, pos):
         box_origin, s_angle, e_angle = pos.get_angle_from_position(self.config.tile_size, self.config.line_width)
