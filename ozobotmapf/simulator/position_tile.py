@@ -35,3 +35,6 @@ class PositionTile:
 
         if self.type == PositionTypes.STOP and self.previous_direction == self.next_direction:
             self.u_turn = True
+
+    def is_stop(self):
+        return self.__get_type() == PositionTypes.STOP

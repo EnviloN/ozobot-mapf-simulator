@@ -147,10 +147,20 @@ class PathPosition:
             return angle2, angle1
 
     def should_print_intersection(self):
-        return ((not self.is_turn()) and self.is_first_half and self.offset >= 0.4 and
-                self.pos_tile.intersection_cnt < 1 and self.get_type() == PositionTypes.PASS) or \
-               ((not self.is_turn()) and (not self.is_first_half) and self.offset >= 0.7 and
-                self.pos_tile.intersection_cnt < 2 and self.get_type() == PositionTypes.PASS)
+        if self.next_pos_tile.is_turn and self.next_pos_tile.is_stop():
+            return ((not self.is_turn()) and self.is_first_half and self.offset >= 0.45 and
+                    self.pos_tile.intersection_cnt < 1 and self.get_type() == PositionTypes.PASS) or \
+                   ((not self.is_turn()) and (not self.is_first_half) and self.offset >= 0.03 and
+                    self.pos_tile.intersection_cnt < 2 and self.get_type() == PositionTypes.PASS) or \
+                   ((not self.is_turn()) and (not self.is_first_half) and self.offset >= 0.6 and
+                    self.pos_tile.intersection_cnt < 3 and self.get_type() == PositionTypes.PASS)
+        else:
+            return ((not self.is_turn()) and self.is_first_half and self.offset >= 0.45 and
+                    self.pos_tile.intersection_cnt < 1 and self.get_type() == PositionTypes.PASS) or \
+                   ((not self.is_turn()) and (not self.is_first_half) and self.offset >= 0.1 and
+                    self.pos_tile.intersection_cnt < 2 and self.get_type() == PositionTypes.PASS) or \
+                   ((not self.is_turn()) and (not self.is_first_half) and self.offset >= 0.75 and
+                    self.pos_tile.intersection_cnt < 3 and self.get_type() == PositionTypes.PASS)
 
     def get_normal_directions(self):
         direction = self.pos_tile.from_dir if self.is_first_half else self.pos_tile.to_dir

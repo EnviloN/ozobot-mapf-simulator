@@ -58,7 +58,7 @@ class OzobotAgent(Agent):
     def __add_intersection_segments(self, pos):
         point = pos.get_point_from_position(True)
         p1, p2 = self.__get_intersection_indicator_ends(point, pos)
-        if pos.next_pos_tile.is_turn and not pos.is_first_half:  # Intersection right before a turn
+        if pos.next_pos_tile.is_turn and pos.pos_tile.intersection_cnt >= 2:  # Intersection right before a turn
             self.tail.append(
                 TurnSegment(self._line_drawable(p1, p2), pos.time,
                             self.config.tail_lag, self.config.colors)

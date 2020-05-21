@@ -37,7 +37,7 @@ class Editor:
         pygame.display.set_caption(Values.EDITOR_NAME)
         self.__screen = None
         self.__width, self.__height = self.config.window_width, self.config.window_height
-        self.font = pygame.font.Font('freesansbold.ttf', 20)
+        self.font = pygame.font.Font('freesansbold.ttf', 40)
 
     def __init_screen(self):
         logging.info("Initializing screen.")

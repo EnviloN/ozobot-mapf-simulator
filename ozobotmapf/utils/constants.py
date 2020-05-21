@@ -16,8 +16,10 @@ class Colors:
     MAGENTA = pygame.Color(255, 0, 255)
     YELLOW = pygame.Color(255, 255, 0)
 
-    START = pygame.Color(230, 255, 230)
-    FINISH = pygame.Color(255, 230, 230)
+    # START = pygame.Color(230, 255, 230)
+    # FINISH = pygame.Color(255, 230, 230)
+    START = pygame.Color(235, 255, 235)
+    FINISH = pygame.Color(255, 235, 235)
 
 
 class Values:
