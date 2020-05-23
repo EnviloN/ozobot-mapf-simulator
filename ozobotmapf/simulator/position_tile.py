@@ -38,3 +38,6 @@ class PositionTile:
 
     def is_stop(self):
         return self.__get_type() == PositionTypes.STOP
+
+    def is_start(self):
+        return self.__get_type() == PositionTypes.START

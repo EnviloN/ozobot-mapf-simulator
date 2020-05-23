@@ -68,7 +68,7 @@ def init_solver(config):
     solver_args = {"input-file": config.map_path, "algorithm": "smtcbs++"}
     solvers = ["mapf_solver_boOX", "rota_solver_boOX"]
     solver = MapfSolverBoOX(config.solver_path + solvers[0], solver_args)
-    # solver = ManualSolver()
+    # solver = ManualSolver() # Use in case the plan needs to be modified
     logging.info("Solver initialized.")
     return solver
 

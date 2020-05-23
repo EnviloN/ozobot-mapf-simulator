@@ -31,7 +31,10 @@ class OzobotAgent(Agent):
             return
 
         if pos.is_turn() and pos.get_type() != PositionTypes.STOP:
-            self.__add_arc_segment(pos)
+            if pos.prev_pos_tile.is_start() and pos.prev_pos_tile.is_turn and pos.is_first_half:
+                self.__add_arc_segment(pos, True)
+            else:
+                self.__add_arc_segment(pos)
         else:
             if self.config.colors and pos.should_print_intersection():
                 self.__add_intersection_segments(pos)
@@ -41,8 +44,8 @@ class OzobotAgent(Agent):
                 else:
                     self.__add_turn_wait_segment(pos)
 
-    def __add_arc_segment(self, pos):
-        box_origin, s_angle, e_angle = pos.get_angle_from_position(self.config.tile_size, self.config.line_width)
+    def __add_arc_segment(self, pos, full=False):
+        box_origin, s_angle, e_angle = pos.get_angle_from_position(self.config.tile_size, self.config.line_width, full)
         if box_origin:
             self.tail.append(TurnSegment(
                 self._arc_drawable(box_origin, s_angle, e_angle),
@@ -58,7 +61,10 @@ class OzobotAgent(Agent):
     def __add_intersection_segments(self, pos):
         point = pos.get_point_from_position(True)
         p1, p2 = self.__get_intersection_indicator_ends(point, pos)
-        if pos.next_pos_tile.is_turn and pos.pos_tile.intersection_cnt >= 2:  # Intersection right before a turn
+        if pos.prev_pos_tile.is_turn and pos.prev_pos_tile.is_start() and pos.pos_tile.intersection_cnt == 0:
+            # First intersection after Wait on Turn
+            pass
+        elif pos.next_pos_tile.is_turn and pos.pos_tile.intersection_cnt >= 2:  # Intersection right before a turn
             self.tail.append(
                 TurnSegment(self._line_drawable(p1, p2), pos.time,
                             self.config.tail_lag, self.config.colors)
@@ -97,9 +103,15 @@ class OzobotAgent(Agent):
 
     def __add_turn_wait_segment(self, pos):
         entry = pos.get_tile().get_edge_middle(pos.pos_tile.previous_direction)
-        p = pos.get_tile().get_middle().moved_direction(pos.pos_tile.next_direction, self.config.tile_size / 3)
+        middle = pos.get_tile().get_middle()
+        p1 = middle.moved_direction(pos.pos_tile.previous_direction, self.config.tile_size / 3)
+        p2 = middle.moved_direction(pos.pos_tile.next_direction, self.config.tile_size / 3.5).moved_direction(pos.pos_tile.previous_direction, self.config.tile_size / 4)
         self.tail.append(
-            PathSegment(self._line_drawable(entry, entry.offset_to(p, 0.5)), pos.time,
+            PathSegment(self._line_drawable(entry, p1), pos.time,
+                        self.config.tail_lag, self.config.colors)
+        )
+        self.tail.append(
+            PathSegment(self._line_drawable(p1, p2), pos.time,
                         self.config.tail_lag, self.config.colors)
         )
 

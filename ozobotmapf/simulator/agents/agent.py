@@ -99,7 +99,8 @@ class Agent:
         current_pos_id = self.__position_id_from_time(position.time)
         current_pos = self.positions[current_pos_id]
         next_pos = self.positions[current_pos_id + 1] if current_pos_id < len(self.positions) - 1 else current_pos
-        position.set_position_tile(current_pos, next_pos)
+        prev_pos = self.positions[current_pos_id - 1] if current_pos_id > 0 else current_pos
+        position.set_position_tile(current_pos, next_pos, prev_pos)
 
         enter, middle, leave = self.__time_window_from_position(current_pos_id)
         position.set_time_window(enter, middle, leave)
