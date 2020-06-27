@@ -45,13 +45,13 @@ class CLIOptions:
                                    help='Window resolution to be used [Width, Height].')
         self.__parser.add_argument('-f', '--full-screen', dest='fullscreen', action='store_true',
                                    help='Window is run in fullscreen mode.')
-        self.__parser.add_argument('-m', '--level', type=str, dest='map_file',
+        self.__parser.add_argument('-m', '--map', type=str, dest='map_file',
                                    help='Map of the problem.')
-        self.__parser.add_argument('-ma', '--level-attributes', nargs=3, type=int, dest='map_attributes',
+        self.__parser.add_argument('-ma', '--map-attributes', nargs=3, type=int, dest='map_attributes',
                                    help='Map attributes: Width, height, number of agents.')
         self.__parser.add_argument('-d', '--debug', dest='debug', action='store_true',
                                    help='Log debugging messages.')
-        self.__parser.add_argument('-c', '--config_file', type=str, dest='config_file',
+        self.__parser.add_argument('-c', '--config-file', type=str, dest='config_file',
                                    help='Application configuration file.')
         self.__parser.add_argument('-e', '--editor', dest='editor', action='store_true',
                                    help='Start level editor.')

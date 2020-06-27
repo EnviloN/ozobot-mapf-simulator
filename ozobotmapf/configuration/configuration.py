@@ -128,6 +128,8 @@ class SimulatorConfig(Configuration):
 
         self.map_path = cli.map_file
         self.solver_path = config["solver"]["path"]
+        self.solver = config["solver"]["solver"]
+        self.solver_algorithm = config["solver"]["algorithm"]
         self.map_width, self.map_height, self.map_agent_count = cli.map_attributes
 
         self.color_code_radius = round(config["ozobot"]["color_code_radius"] * self.mm_to_px)

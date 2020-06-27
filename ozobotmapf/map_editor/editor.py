@@ -344,7 +344,7 @@ class Editor:
                       "First three numbers should be correct level attributes (in this case: {}, {}, {})."
                       .format(self.config.map_width, self.config.map_height, self.config.map_agent_count))
                 answer = ""
-                while answer != 'y' or answer != 'n':
+                while answer != 'y' and answer != 'n':
                     answer = input("Are you sure you want to use level name '{}'? (y/n): ".format(name)).lower()
                 if answer == 'y':
                     valid = True
